@@ -60,7 +60,7 @@ class Command(BaseCommand):
         ]
 
         counts["BUILDING"] = 0
-
+        # THIS IS EQUIVALENT TO THE INSERT INTO SINCE ITS DONE IN DJANGO ORM
         # Loop through the sample buildings and insert them
         for pk, name, street, district, city, acquired in buildings:
             _, created = seed(
