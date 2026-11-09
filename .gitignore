@@ -223,3 +223,9 @@ __marimo__/
 !.env.example
 
 .vscode/
+
+#database backup in case I fck up the database
+backups/
+
+# Test database cuz i might make a mistake
+config/settings_pk_test.py

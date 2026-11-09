@@ -1,10 +1,12 @@
+
 from django.db import models
 from django.utils import timezone
 from .validators import validate_not_future, validate_past_date
 
 # 1. BUILDING
 class Building(models.Model):
-    building_id = models.AutoField(
+    building_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Building_ID'
     )
@@ -25,7 +27,8 @@ class Building(models.Model):
 
 # 2. AGENT
 class Agent(models.Model):
-    agent_id = models.AutoField(
+    agent_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Agent_ID'
     )
@@ -47,7 +50,8 @@ class Agent(models.Model):
 
 # 3. VENUE
 class Venue(models.Model):
-    venue_id = models.AutoField(
+    venue_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Venue_ID'
     )
@@ -81,7 +85,8 @@ class Venue(models.Model):
     
 # 4. VENUE_ASSIGNMENT
 class VenueAssignment(models.Model):
-    assignment_id = models.AutoField(
+    assignment_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Assignment_ID'
     )
@@ -119,7 +124,8 @@ class VenueAssignment(models.Model):
 
 # 5. RENOVATION
 class Renovation(models.Model):
-    renovation_id = models.AutoField(
+    renovation_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Renovation_ID'
     )
@@ -164,7 +170,8 @@ class Renovation(models.Model):
 
 # 6. AMENITY_TYPE
 class AmenityType(models.Model):
-    amenity_id = models.AutoField(
+    amenity_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Amenity_ID'
     )
@@ -182,7 +189,8 @@ class AmenityType(models.Model):
 
 # 7. VENUE_AMENITY
 class VenueAmenity(models.Model):
-    venue_amenity_id = models.AutoField(
+    venue_amenity_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Venue_Amenity_ID'
     )
@@ -226,7 +234,8 @@ class VenueAmenity(models.Model):
 
 # 8. CUSTOMER
 class Customer(models.Model):
-    customer_id = models.AutoField(
+    customer_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Customer_ID'
     )
@@ -257,7 +266,8 @@ class Customer(models.Model):
 
 # 9. RESERVATION
 class Reservation(models.Model):
-    reservation_id = models.AutoField(
+    reservation_id = models.CharField(
+        max_length=8,
         primary_key=True,
         db_column='Reservation_ID'
     )
