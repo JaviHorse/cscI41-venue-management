@@ -1,19 +1,15 @@
 from django.db import models
 
-#TODO: 
-# 1. Make max_lengths consistent with data dictionary
-# 2. Make sure primary_key(s) are set properly as per the data dictionary
-
 # 1. BUILDING
 class Building(models.Model):
     building_id = models.AutoField(
         primary_key=True,
         db_column='Building_ID'
     )
-    building_name = models.CharField(max_length=150, db_column='Building_Name')
-    street = models.CharField(max_length=150, db_column='Street')
-    district = models.CharField(max_length=100, db_column='District')
-    city = models.CharField(max_length=100, db_column='City')
+    building_name = models.CharField(max_length=100, db_column='Building_Name')
+    street = models.CharField(max_length=100, db_column='Street')
+    district = models.CharField(max_length=50, db_column='District')
+    city = models.CharField(max_length=50, db_column='City')
     acquisition_date = models.DateField(db_column='Acquisition_Date')
 
     class Meta:
@@ -29,8 +25,8 @@ class Agent(models.Model):
         primary_key=True,
         db_column='Agent_ID'
     )
-    first_name = models.CharField(max_length=100, db_column='First_Name')
-    last_name = models.CharField(max_length=100, db_column='Last_Name')
+    first_name = models.CharField(max_length=50, db_column='First_Name')
+    last_name = models.CharField(max_length=50, db_column='Last_Name')
     building = models.ForeignKey(
         Building,
         on_delete=models.PROTECT,
@@ -51,9 +47,9 @@ class Venue(models.Model):
         primary_key=True,
         db_column='Venue_ID'
     )
-    venue_name = models.CharField(max_length=150, db_column='Venue_Name')
+    venue_name = models.CharField(max_length=100, db_column='Venue_Name')
     venue_type = models.CharField(max_length=100, db_column='Venue_Type')
-    floor = models.IntegerField(db_column='Floor')
+    floor = models.CharField(max_length=5, db_column='Floor')
     floor_area_sqm = models.FloatField(db_column='Floor_Area_Sqm')
     capacity = models.PositiveIntegerField(db_column='Capacity')
     building = models.ForeignKey(
@@ -129,7 +125,12 @@ class Renovation(models.Model):
         blank=True,
         db_column='Date_Completed'
     )
-    remarks = models.TextField(db_column='Remarks')
+    remarks = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        db_column='Remarks'
+    )
     venue = models.ForeignKey(
         Venue,
         on_delete=models.PROTECT,
@@ -160,7 +161,7 @@ class AmenityType(models.Model):
         db_column='Amenity_ID'
     )
     amenity_name = models.CharField(
-        max_length=100,
+        max_length=50,
         db_column='Amenity_Name'
     )
 
@@ -177,7 +178,7 @@ class VenueAmenity(models.Model):
         primary_key=True,
         db_column='Venue_Amenity_ID'
     )
-    description = models.TextField(db_column='Description')
+    description = models.CharField(max_length=150, db_column='Description')
     quantity = models.PositiveIntegerField(db_column='Quantity')
     installation_date = models.DateField(db_column='Installation_Date')
     venue = models.ForeignKey(
@@ -212,16 +213,18 @@ class Customer(models.Model):
         primary_key=True,
         db_column='Customer_ID'
     )
-    first_name = models.CharField(max_length=100, db_column='First_Name')
-    last_name = models.CharField(max_length=100, db_column='Last_Name')
+    first_name = models.CharField(max_length=50, db_column='First_Name')
+    last_name = models.CharField(max_length=50, db_column='Last_Name')
     middle_initial = models.CharField(
-        max_length=1,
+        max_length=2,
+        null=True,
         blank=True,
+        default=None,
         db_column='Middle_Initial'
     )
     birth_date = models.DateField(db_column='Birth_Date')
     customer_location = models.CharField(
-        max_length=200,
+        max_length=100,
         db_column='Customer_Location'
     )
 
@@ -273,4 +276,3 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"Reservation {self.reservation_id}"
-
