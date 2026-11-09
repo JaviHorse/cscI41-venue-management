@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from .validators import validate_not_future, validate_past_date
 
 # 1. BUILDING
 class Building(models.Model):
@@ -10,7 +12,9 @@ class Building(models.Model):
     street = models.CharField(max_length=100, db_column='Street')
     district = models.CharField(max_length=50, db_column='District')
     city = models.CharField(max_length=50, db_column='City')
-    acquisition_date = models.DateField(db_column='Acquisition_Date')
+    acquisition_date = models.DateField(
+        validators=[validate_not_future],
+        db_column='Acquisition_Date')
 
     class Meta:
         db_table = 'BUILDING'
@@ -119,7 +123,11 @@ class Renovation(models.Model):
         primary_key=True,
         db_column='Renovation_ID'
     )
-    date_started = models.DateField(db_column='Date_Started')
+    date_started = models.DateField(
+        default=timezone.localdate,
+        validators=[validate_not_future],
+        db_column='Date_Started'
+        )
     date_completed = models.DateField(
         null=True,
         blank=True,
@@ -179,8 +187,17 @@ class VenueAmenity(models.Model):
         db_column='Venue_Amenity_ID'
     )
     description = models.CharField(max_length=150, db_column='Description')
-    quantity = models.PositiveIntegerField(db_column='Quantity')
-    installation_date = models.DateField(db_column='Installation_Date')
+    quantity = models.PositiveIntegerField(
+        default=1,
+        db_column='Quantity'
+    )
+    
+    installation_date = models.DateField(
+        default=timezone.localdate,
+        validators=[validate_not_future],
+        db_column='Installation_Date'
+    )
+    
     venue = models.ForeignKey(
         Venue,
         on_delete=models.PROTECT,
@@ -222,7 +239,10 @@ class Customer(models.Model):
         default=None,
         db_column='Middle_Initial'
     )
-    birth_date = models.DateField(db_column='Birth_Date')
+    birth_date = models.DateField(
+        validators=[validate_past_date],
+        db_column='Birth_Date'
+    )
     customer_location = models.CharField(
         max_length=100,
         db_column='Customer_Location'
@@ -244,6 +264,7 @@ class Reservation(models.Model):
     start_datetime = models.DateTimeField(db_column='Start_DateTime')
     end_datetime = models.DateTimeField(db_column='End_DateTime')
     expected_participants = models.PositiveIntegerField(
+        default=1,
         db_column='Expected_Participants'
     )
     venue = models.ForeignKey(
