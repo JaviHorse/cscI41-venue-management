@@ -1,5 +1,9 @@
 from django.db import models
 
+#TODO: 
+# 1. Make max_lengths consistent with data dictionary
+# 2. Make sure primary_key(s) are set properly as per the data dictionary
+
 # 1. BUILDING
 class Building(models.Model):
     building_id = models.AutoField(
