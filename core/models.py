@@ -86,7 +86,11 @@ class VenueAssignment(models.Model):
         db_column='Assignment_ID'
     )
     start_date = models.DateField(db_column='Start_Date')
-    end_date = models.DateField(db_column='End_Date')
+    end_date = models.DateField(
+        null=True,
+        blank=True,
+        db_column='End_Date'
+    )
     agent = models.ForeignKey(
         Agent,
         on_delete=models.PROTECT,
