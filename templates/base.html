@@ -9,10 +9,14 @@
         <div id="content">
             {%block content%}{%endblock%}
         </div>
-        {% if user.is_authenticated %}
-                {%include 'registration/logout.html'%}
-        {%else%}
-                <a href="{%url 'login' %}"></a>
+         {% if request.user.is_authenticated %}
+            Hello, {{ request.user }}!
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
         {% endif %}
         {%block scripts%}{%endblock%}
     </body>
