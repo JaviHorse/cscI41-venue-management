@@ -155,3 +155,15 @@ def create_renovation(
     candidate.save()
 
     return candidate
+
+def next_reservation_id():
+    # Reservation IDs are hand-assigned text (RSVN1001, RSVN1002, ...), so we
+    # take the highest existing one and add 1. Fixed-width IDs sort correctly as text.
+    last = (
+        Reservation.objects
+        .filter(reservation_id__startswith='RSVN')
+        .order_by('-reservation_id')
+        .first()
+    )
+    number = int(last.reservation_id[4:]) + 1 if last else 1001
+    return f"RSVN{number:04d}"
