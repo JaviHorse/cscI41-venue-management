@@ -1,93 +1,57 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
-from django.views.generic import TemplateView, DetailView, ListView
-from datetime import datetime
 from django.utils import timezone
-from .models import Venue, Reservation, Customer
-from .forms import ReservationForm
+from django.views.generic import DetailView, ListView
+
+from . import queries
+from .forms import ReservationForm, VenueFilterForm
+from .models import Customer
 from .services import create_reservation, next_reservation_id
 
 
-# Create your views here.
-class HomeView(LoginRequiredMixin, TemplateView):
-    template_name = 'home.html'
+class VenueListView(LoginRequiredMixin, ListView):
+    """/venues/ — all venues, narrowed by the filters in the URL query string."""
+    template_name = 'venue-list.html'
+    context_object_name = 'venues'
+
+    def get_queryset(self):
+        # Filters are read from request.GET, so a filtered list is just a URL that can be bookmarked.
+        self.filter_form = VenueFilterForm(self.request.GET or None)
+        if self.filter_form.is_valid():
+            f = self.filter_form.cleaned_data
+            return queries.search_venues(
+                building=f['building'],
+                venue_type=f['type'],
+                min_capacity=f['min_capacity'],
+                amenity=f['amenity'],
+                start=f['start'],
+                end=f['end'],
+            )
+        return queries.search_venues()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        venues = Venue.objects.all()
-
-        building = self.request.GET.get('building')
-        if building:
-            venues = venues.filter(building__building_name__icontains=building)
-
-        venue_type = self.request.GET.get('venue_type')
-        if venue_type:
-            venues = venues.filter(venue_type__icontains=venue_type)
-
-        capacity = self.request.GET.get('capacity')
-        if capacity:
-            try:
-                capacity = int(capacity)
-                if capacity < 1:
-                    raise ValueError
-                venues = venues.filter(capacity__gte=capacity)
-            except ValueError:
-                context['capacity_error'] = 'Capacity must be a positive integer.'
-
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
-        start_time = self.request.GET.get('start_time')
-        end_time = self.request.GET.get('end_time')
-
-        if start_date or end_date or start_time or end_time:
-            if not all([start_date, end_date, start_time, end_time]):
-                context['datetime_error'] = 'Please provide both dates and both times.'
-            else:
-                try:
-                    start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
-                    end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
-
-                    start_time_obj = datetime.strptime(start_time, '%H:%M').time()
-                    end_time_obj = datetime.strptime(end_time, '%H:%M').time()
-
-                    # make_aware because USE_TZ=True stores aware datetimes in the DB.
-                    start_datetime_obj = timezone.make_aware(datetime.combine(start_date_obj, start_time_obj))
-                    end_datetime_obj = timezone.make_aware(datetime.combine(end_date_obj, end_time_obj))
-
-                    if start_datetime_obj >= end_datetime_obj:
-                        context['datetime_error'] = (
-                            'End date/time must be later than start date/time.'
-                        )
-                    else:
-                        # Two bookings overlap if one starts before the other ends (and vice versa).
-                        # Using the model's datetime fields replaces the old split date/time excludes.
-                        conflicting_reservations = Reservation.objects.filter(
-                            venue__in=venues,
-                            start_datetime__lt=end_datetime_obj,
-                            end_datetime__gt=start_datetime_obj,
-                        )
-
-                        venues = venues.exclude(
-                            pk__in=conflicting_reservations.values_list('venue_id', flat=True)
-                        )
-
-                except ValueError:
-                    context['datetime_error'] = 'Please enter valid dates and times.'
-
-        context['venues'] = venues
+        context['filter_form'] = self.filter_form
         return context
 
 
 class VenueDetailView(DetailView):
-    model = Venue
+    """/venues/<venue_id>/ — one venue's details, plus the reservation form."""
     template_name = 'venue-detail.html'
+    context_object_name = 'venue'
     # DetailView reads the ID from a URL parameter named "pk" by default, but our URL names it <venue_id>.
     # This tells it to read "venue_id" instead (it still matches against the model's primary key).
     pk_url_kwarg = 'venue_id'
 
+    def get_queryset(self):
+        return queries.venue_with_building()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['amenities'] = queries.venue_amenities(self.object)
+        context['assignment'] = queries.current_agent_assignment(self.object).first()
+        context['renovations'] = queries.ongoing_renovations(self.object)
 
         if 'reservation_form' not in context:
             context['reservation_form'] = ReservationForm()
@@ -114,7 +78,7 @@ class VenueDetailView(DetailView):
                 # create_reservation (services.py) already checks capacity, start < end,
                 # overlapping reservations and renovations, so the view doesn't repeat them.
                 try:
-                    create_reservation(
+                    reservation = create_reservation(
                         reservation_id=next_reservation_id(),
                         venue_id=self.object.pk,
                         customer_id=customer.pk,
@@ -122,7 +86,7 @@ class VenueDetailView(DetailView):
                         end_datetime=data['end_datetime'],
                         expected_participants=data['expected_participants'],
                     )
-                    return redirect('core:reservations')
+                    return redirect('core:reservation-detail', reservation_id=reservation.pk)
                 except ValidationError as error:
                     for message in error.messages:
                         reservation_form.add_error(None, message)
@@ -132,12 +96,21 @@ class VenueDetailView(DetailView):
         )
 
 
-class ReservationsListView(LoginRequiredMixin, ListView):
-    model = Reservation
-    template_name = 'reservations.html'
+class ReservationListView(LoginRequiredMixin, ListView):
+    """/reservations/ — the logged-in customer's reservations."""
+    template_name = 'reservation-list.html'
+    context_object_name = 'reservations'
 
     def get_queryset(self):
-        # Filter through Customer -> Profile -> User; returns nothing for non-customer accounts.
-        return Reservation.objects.filter(
-            customer__profile__user=self.request.user
-        ).select_related('venue').order_by('start_datetime')
+        return queries.customer_reservations(self.request.user)
+
+
+class ReservationDetailView(LoginRequiredMixin, DetailView):
+    """/reservations/<reservation_id>/ — summary shown after booking."""
+    template_name = 'reservation-detail.html'
+    context_object_name = 'reservation'
+    pk_url_kwarg = 'reservation_id'
+
+    def get_queryset(self):
+        # Limited to the user's own reservations, so other people's IDs give a 404.
+        return queries.customer_reservations(self.request.user)
