@@ -82,7 +82,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 class VenueDetailView(DetailView):
     model = Venue
     template_name = 'venue-detail.html'
-    # The URL passes <venue_id>, but DetailView looks for "pk" by default.
+    # DetailView reads the ID from a URL parameter named "pk" by default, but our URL names it <venue_id>.
+    # This tells it to read "venue_id" instead (it still matches against the model's primary key).
     pk_url_kwarg = 'venue_id'
 
     def get_context_data(self, **kwargs):
