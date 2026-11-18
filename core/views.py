@@ -10,8 +10,12 @@ from .models import Customer
 from .services import create_reservation, next_reservation_id
 
 
-class VenueListView(LoginRequiredMixin, ListView):
-    """/venues/ — all venues, narrowed by the filters in the URL query string."""
+class VenueListView(ListView):
+    """/venues/ — all venues, narrowed by the filters in the URL query string.
+
+    Public: anyone can browse venues. Logging in is only needed to reserve
+    (see VenueDetailView.post) and to see your own reservations.
+    """
     template_name = 'venue-list.html'
     context_object_name = 'venues'
 

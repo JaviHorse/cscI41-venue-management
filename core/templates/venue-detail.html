@@ -57,10 +57,16 @@
 
     <aside class="card sticky">
         <h2>Make a Reservation</h2>
-        {% if request.user.profile.customer %}
-            {% if renovations %}
-                <p class="alert alert-amber">This venue is under renovation right now. Bookings that overlap the renovation will not go through.</p>
-            {% endif %}
+        {% if renovations %}
+            <p class="alert alert-amber">This venue is under renovation right now. Bookings that overlap the renovation will not go through.</p>
+        {% endif %}
+
+        {% if not request.user.is_authenticated %}
+            {# Anyone can look; logging in is only needed to book. "next" brings them back here after login. #}
+            <p class="muted">Log in to book this venue. You will come right back to this page.</p>
+            <a class="btn btn-primary btn-block" href="{% url 'login' %}?next={{ request.path|urlencode }}">Log In to Reserve</a>
+        {% elif request.user.profile.customer %}
+            {# Only accounts linked to a Customer can book (User -> Profile -> Customer). #}
             <form method="POST">
                 {% csrf_token %}
                 {{ reservation_form.as_p }}
