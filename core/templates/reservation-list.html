@@ -3,18 +3,30 @@
 {% block title %}State Spaces | My Reservations{% endblock %}
 
 {% block content %}
+<div class="section-head">
     <h2>My Reservations</h2>
-    <ul>
-        {% for reservation in reservations %}
-            <li>
-                <a href="{% url 'core:reservation-detail' reservation.pk %}">{{ reservation.reservation_id }}</a>
-                - {{ reservation.venue.venue_name }}, {{ reservation.venue.building.building_name }}
-                ({{ reservation.start_datetime }} to {{ reservation.end_datetime }})
-            </li>
-        {% empty %}
-            <li>You have not made any reservations yet.</li>
-        {% endfor %}
-    </ul>
+    <span class="count">{{ reservations|length }}</span>
+</div>
 
-    <a href="{% url 'core:venue-list' %}">Back to Venues</a>
+<div class="stack">
+    {% for reservation in reservations %}
+        <a class="card row-card" href="{% url 'core:reservation-detail' reservation.pk %}">
+            <div class="main">
+                <p class="muted small">{{ reservation.reservation_id }}</p>
+                <h3>{{ reservation.venue.venue_name }}</h3>
+                <p class="muted">{{ reservation.venue.building.building_name }} · Floor {{ reservation.venue.floor }}</p>
+            </div>
+            <div class="when">
+                <strong>{{ reservation.start_datetime|date:"D, M j, Y" }}</strong>
+                <span class="muted">{{ reservation.start_datetime|date:"g:i A" }} to {{ reservation.end_datetime|date:"M j, g:i A" }}</span>
+            </div>
+            <span class="chip">{{ reservation.expected_participants }} people</span>
+        </a>
+    {% empty %}
+        <div class="card empty">
+            <p>You have not made any reservations yet.</p>
+            <a class="btn btn-primary" href="{% url 'core:venue-list' %}">Browse Venues</a>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

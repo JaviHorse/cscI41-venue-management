@@ -3,26 +3,44 @@
 {% block title %}State Spaces | Venues{% endblock %}
 
 {% block content %}
-    <h1>State Spaces</h1>
-    <a href="{% url 'core:reservation-list' %}">My Reservations</a>
+<div class="layout venue-browser">
+    <aside class="card sticky">
+        <h2>Find a Venue</h2>
+        <p class="muted">Pick a start and end time to see only the venues that are free.</p>
+        <form method="GET">
+            {{ filter_form.as_div }}
+            <button type="submit" class="btn btn-primary btn-block">Check Availability</button>
+        </form>
+        <a class="link-muted" href="{% url 'core:venue-list' %}">Clear filters</a>
+    </aside>
 
-    <h2>Find a Venue</h2>
-    <form method="GET">
-        {{ filter_form.as_p }}
-        <button type="submit">Search</button>
-        <a href="{% url 'core:venue-list' %}">Clear filters</a>
-    </form>
+    <section>
+        <div class="section-head">
+            <h2>Venues</h2>
+            <span class="count">{{ venues|length }}</span>
+        </div>
 
-    <h2>All Venues</h2>
-    <ul>
-        {% for venue in venues %}
-            <li>
-                <a href="{% url 'core:venue-detail' venue.pk %}">{{ venue.venue_name }}</a>
-                - {{ venue.venue_type }}, {{ venue.building.building_name }}
-                (Capacity: {{ venue.capacity }})
-            </li>
-        {% empty %}
-            <li>No venues match your filters.</li>
-        {% endfor %}
-    </ul>
+        <div class="grid">
+            {% for venue in venues %}
+                <article class="card venue-card">
+                    <div class="card-top">
+                        <span class="chip">{{ venue.venue_type }}</span>
+                        {% if filter_form.is_valid and filter_form.cleaned_data.start %}
+                            <span class="badge badge-green">Available</span>
+                        {% endif %}
+                    </div>
+                    <h3>{{ venue.venue_name }}</h3>
+                    <p class="muted">{{ venue.building.building_name }} · Floor {{ venue.floor }}</p>
+                    <ul class="facts">
+                        <li><strong>{{ venue.capacity }}</strong> people</li>
+                        <li><strong>{{ venue.floor_area_sqm }}</strong> sqm</li>
+                    </ul>
+                    <a class="btn btn-primary btn-block" href="{% url 'core:venue-detail' venue.pk %}">View Venue</a>
+                </article>
+            {% empty %}
+                <p class="card empty">No venues match your filters.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock %}

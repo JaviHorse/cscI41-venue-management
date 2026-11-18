@@ -3,52 +3,69 @@
 {% block title %}State Spaces | {{ venue.venue_name }}{% endblock %}
 
 {% block content %}
-    <h2>{{ venue.venue_name }}</h2>
+<a class="back" href="{% url 'core:venue-list' %}">← Back to Venues</a>
 
-    <h3>Venue Information</h3>
-    <ul>
-        <li>Type: {{ venue.venue_type }}</li>
-        <li>Floor: {{ venue.floor }}</li>
-        <li>Floor Area: {{ venue.floor_area_sqm }} sqm</li>
-        <li>Capacity: {{ venue.capacity }}</li>
-    </ul>
+<div class="layout layout-detail">
+    <section class="card">
+        <div class="card-top">
+            <span class="chip">{{ venue.venue_type }}</span>
+            {% if renovations %}
+                <span class="badge badge-amber">Under Renovation</span>
+            {% else %}
+                <span class="badge badge-green">Open for Booking</span>
+            {% endif %}
+        </div>
+        <h2>{{ venue.venue_name }}</h2>
+        <p class="muted">{{ venue.building.building_name }} · Floor {{ venue.floor }}</p>
+        <ul class="facts">
+            <li><strong>{{ venue.capacity }}</strong> people</li>
+            <li><strong>{{ venue.floor_area_sqm }}</strong> sqm</li>
+        </ul>
 
-    <h3>Location</h3>
-    <ul>
-        <li>Building: {{ venue.building.building_name }}</li>
-        <li>Address: {{ venue.building.street }}, {{ venue.building.district }}, {{ venue.building.city }}</li>
-    </ul>
+        <div class="detail-section">
+            <h3>Location</h3>
+            <p>{{ venue.building.street }}, {{ venue.building.district }}, {{ venue.building.city }}</p>
+        </div>
 
-    <h3>Agent</h3>
-    {% if assignment %}
-        <p>{{ assignment.agent }}</p>
-    {% else %}
-        <p>No agent is assigned to this venue right now.</p>
-    {% endif %}
+        <div class="detail-section">
+            <h3>Agent</h3>
+            {% if assignment %}
+                <p>{{ assignment.agent }}</p>
+            {% else %}
+                <p class="muted">No agent is assigned to this venue right now.</p>
+            {% endif %}
+        </div>
 
-    <h3>Amenities:</h3>
-    <ul>
-        {% for amenity in amenities %}
-            <li>{{ amenity.amenity.amenity_name }} - {{ amenity.description }} (Quantity: {{ amenity.quantity }})</li>
-        {% empty %}
-            <li>No amenities recorded.</li>
-        {% endfor %}
-    </ul>
+        <div class="detail-section">
+            <h3>Amenities</h3>
+            <ul class="amenities">
+                {% for amenity in amenities %}
+                    <li>
+                        <span class="chip">{{ amenity.amenity.amenity_name }} × {{ amenity.quantity }}</span>
+                        <span class="muted small">{{ amenity.description }}</span>
+                    </li>
+                {% empty %}
+                    <li class="muted">No amenities recorded.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
 
-    <h3>Make a Reservation</h3>
-    {# Only accounts linked to a Customer can book (User -> Profile -> Customer). #}
-    {% if request.user.profile.customer %}
-        {% if renovations %}
-            <p>This venue is currently under renovation.</p>
+    <aside class="card sticky">
+        <h2>Make a Reservation</h2>
+        {# Only accounts linked to a Customer can book (User -> Profile -> Customer). #}
+        {% if request.user.profile.customer %}
+            {% if renovations %}
+                <p class="alert alert-amber">This venue is under renovation right now. Bookings that overlap the renovation will not go through.</p>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                {{ reservation_form.as_p }}
+                <button type="submit" class="btn btn-primary btn-block">Reserve</button>
+            </form>
+        {% else %}
+            <p class="alert alert-amber">Only customer accounts can make reservations. Your account, {{ request.user }}, is not linked to a customer.</p>
         {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            {{ reservation_form.as_p }}
-            <button type="submit">Reserve</button>
-        </form>
-    {% else %}
-        <p>Only customer accounts can make reservations. Your account, {{ request.user }}, is not linked to a customer.</p>
-    {% endif %}
-
-    <a href="{% url 'core:venue-list' %}">Back to Venues</a>
+    </aside>
+</div>
 {% endblock %}

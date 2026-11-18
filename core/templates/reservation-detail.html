@@ -3,28 +3,52 @@
 {% block title %}State Spaces | Reservation {{ reservation.reservation_id }}{% endblock %}
 
 {% block content %}
-    <h2>Reservation {{ reservation.reservation_id }}</h2>
+<a class="back" href="{% url 'core:reservation-list' %}">← Back to My Reservations</a>
 
-    <h3>Customer</h3>
-    <ul>
-        <li>Name: {{ reservation.customer }}</li>
-        <li>Location: {{ reservation.customer.customer_location }}</li>
-    </ul>
+<div class="card">
+    <div class="summary-head">
+        <div>
+            <p class="muted small">Reservation</p>
+            <h2>{{ reservation.reservation_id }}</h2>
+        </div>
+        <span class="badge badge-primary">{{ reservation.expected_participants }} participants</span>
+    </div>
 
-    <h3>Venue</h3>
-    <ul>
-        <li>Name: {{ reservation.venue.venue_name }}</li>
-        <li>Type: {{ reservation.venue.venue_type }}</li>
-        <li>Location: Floor {{ reservation.venue.floor }}, {{ reservation.venue.building.building_name }},
-            {{ reservation.venue.building.street }}, {{ reservation.venue.building.district }}, {{ reservation.venue.building.city }}</li>
-    </ul>
+    <div class="summary-grid detail-section">
+        <section>
+            <h3>Customer</h3>
+            <dl>
+                <dt>Name</dt>
+                <dd>{{ reservation.customer }}</dd>
+                <dt>Location</dt>
+                <dd>{{ reservation.customer.customer_location }}</dd>
+            </dl>
+        </section>
 
-    <h3>Booking</h3>
-    <ul>
-        <li>Start: {{ reservation.start_datetime }}</li>
-        <li>End: {{ reservation.end_datetime }}</li>
-        <li>Expected Participants: {{ reservation.expected_participants }}</li>
-    </ul>
+        <section>
+            <h3>Venue</h3>
+            <dl>
+                <dt>Name</dt>
+                <dd>{{ reservation.venue.venue_name }}</dd>
+                <dt>Type</dt>
+                <dd>{{ reservation.venue.venue_type }}</dd>
+                <dt>Location</dt>
+                <dd>Floor {{ reservation.venue.floor }}, {{ reservation.venue.building.building_name }},
+                    {{ reservation.venue.building.street }}, {{ reservation.venue.building.district }}, {{ reservation.venue.building.city }}</dd>
+            </dl>
+        </section>
 
-    <a href="{% url 'core:reservation-list' %}">Back to My Reservations</a>
+        <section>
+            <h3>Booking</h3>
+            <dl>
+                <dt>Start</dt>
+                <dd>{{ reservation.start_datetime|date:"D, M j, Y · g:i A" }}</dd>
+                <dt>End</dt>
+                <dd>{{ reservation.end_datetime|date:"D, M j, Y · g:i A" }}</dd>
+                <dt>Expected Participants</dt>
+                <dd>{{ reservation.expected_participants }}</dd>
+            </dl>
+        </section>
+    </div>
+</div>
 {% endblock %}
