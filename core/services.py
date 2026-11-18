@@ -155,3 +155,15 @@ def create_renovation(
     candidate.save()
 
     return candidate
+
+def next_id(model):
+    ''''
+    Get every id in the table, then splice out the prefix.
+    For example, BLDG1005 -> 1005
+    Take the biggest number and add 1, with default at 1000 + 1.
+    Put the prefix back in front and return it.
+    Use this whenever we make a new record.
+    '''
+    ids = model.object.values_list('pk', flat=True)
+    numbers = [int(i[4:]) for i in ids]
+    return f"{model.ID_PREFIX}{max(numbers, default=1000) + 1:04d}"
