@@ -127,3 +127,23 @@ python manage.py showmigrations core
 ```
 
 You can inspect the database using the SQL statements in `database/verification.sql`.
+
+## IDs
+
+The primary keys we use in the tables follow this convention:
+4-letter prefix and then 4 digits, ex. `BLDG1001`. Here are the 
+entities with their corresponding prefixes.
+
+| Table | Prefix |
+|---|---|
+| BUILDING | BLDG |
+| AGENT | AGNT |
+| VENUE | VENU |
+| VENUEASSIGNMENT | ASGN |
+| RENOVATION | RENO |
+| AMENITYTYPE | AMTY |
+| CUSTOMER | CUST |
+| RESERVATION | RSVN |
+
+- Note: IDs are system-generated (as we indicated in our data dictionary). When creating a new record,
+use next_id(Model) function from `core/services.py` do not type the IDs manually yourself.
