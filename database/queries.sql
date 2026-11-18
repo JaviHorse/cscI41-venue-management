@@ -15,8 +15,8 @@ SELECT DISTINCT "VENUE"."Venue_Type" AS "venue_type" FROM "VENUE" ORDER BY 1 ASC
 SELECT "AMENITY_TYPE"."Amenity_ID", "AMENITY_TYPE"."Amenity_Name" FROM "AMENITY_TYPE" ORDER BY "AMENITY_TYPE"."Amenity_Name" ASC;
 
 -- 4. Venue search by building, type, capacity and amenity
--- Used by: GET /venues/?building=BLDG1001&type=Gym&min_capacity=100&amenity=AMTY1001
-SELECT "VENUE"."Venue_ID", "VENUE"."Venue_Name", "VENUE"."Venue_Type", "VENUE"."Floor", "VENUE"."Floor_Area_Sqm", "VENUE"."Capacity", "VENUE"."Building_ID", "BUILDING"."Building_ID", "BUILDING"."Building_Name", "BUILDING"."Street", "BUILDING"."District", "BUILDING"."City", "BUILDING"."Acquisition_Date" FROM "VENUE" INNER JOIN "BUILDING" ON ("VENUE"."Building_ID" = "BUILDING"."Building_ID") INNER JOIN "VENUE_AMENITY" ON ("VENUE"."Venue_ID" = "VENUE_AMENITY"."Venue_ID") WHERE ("VENUE"."Building_ID" = 'BLDG1001' AND "VENUE"."Venue_Type" = 'Gym' AND "VENUE"."Capacity" >= 100 AND "VENUE_AMENITY"."Amenity_ID" = 'AMTY1001') ORDER BY "BUILDING"."Building_Name" ASC, "VENUE"."Venue_Name" ASC;
+-- Used by: GET /venues/?building=BLDG1001&type=Gym&min_capacity=100&amenities=AMTY1001
+SELECT DISTINCT "VENUE"."Venue_ID", "VENUE"."Venue_Name", "VENUE"."Venue_Type", "VENUE"."Floor", "VENUE"."Floor_Area_Sqm", "VENUE"."Capacity", "VENUE"."Building_ID", "BUILDING"."Building_ID", "BUILDING"."Building_Name", "BUILDING"."Street", "BUILDING"."District", "BUILDING"."City", "BUILDING"."Acquisition_Date" FROM "VENUE" INNER JOIN "BUILDING" ON ("VENUE"."Building_ID" = "BUILDING"."Building_ID") INNER JOIN "VENUE_AMENITY" ON ("VENUE"."Venue_ID" = "VENUE_AMENITY"."Venue_ID") WHERE ("VENUE"."Building_ID" = 'BLDG1001' AND "VENUE"."Venue_Type" = 'Gym' AND "VENUE"."Capacity" >= 100 AND "VENUE_AMENITY"."Amenity_ID" = 'AMTY1001') ORDER BY "BUILDING"."Building_Name" ASC, "VENUE"."Venue_Name" ASC;
 
 -- 5. Available venues: no overlapping reservation or renovation
 -- Used by: GET /venues/?start=2027-01-10T10:00&end=2027-01-10T11:00

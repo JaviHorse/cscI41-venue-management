@@ -9,7 +9,41 @@
         <h2>Find a Venue</h2>
         <p class="muted">Pick a start and end time to see only the venues that are free.</p>
         <form method="GET">
-            {{ filter_form.as_div }}
+            {{ filter_form.non_field_errors }}
+            {% for field in filter_form %}
+                {% if field.name == "amenities" %}
+                    {% with ticked=field.value|length %}
+                    <div>
+                        <span class="label">{{ field.label }}:</span>
+                        <details class="dropdown">
+                            <summary>
+                                {% if ticked %}
+                                    <span>Selected</span>
+                                    <span class="count">{{ ticked }}</span>
+                                {% else %}
+                                    <span>Any amenity</span>
+                                {% endif %}
+                            </summary>
+                            <div class="dropdown-panel">
+                                <p class="dropdown-title">Venue must have all of these</p>
+                                {% for checkbox in field %}
+                                    <label class="check-option" for="{{ checkbox.id_for_label }}">
+                                        <span>{{ checkbox.choice_label }}</span>
+                                        {{ checkbox.tag }}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    </div>
+                    {% endwith %}
+                {% else %}
+                    <div>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
             <button type="submit" class="btn btn-primary btn-block">Check Availability</button>
         </form>
         <a class="link-muted" href="{% url 'core:venue-list' %}">Clear filters</a>

@@ -18,11 +18,16 @@ class ReservationForm(forms.ModelForm):
 
 class VenueFilterForm(forms.Form):
     # Submitted with method="get", so the field names become the URL query string:
-    # /venues/?building=...&type=...&min_capacity=...&amenity=...&start=...&end=...
+    # /venues/?building=...&type=...&min_capacity=...&amenities=...&amenities=...&start=...&end=...
     building = forms.ModelChoiceField(queryset=queries.building_options(), required=False)
     type = forms.ChoiceField(required=False)
     min_capacity = forms.IntegerField(min_value=1, required=False)
-    amenity = forms.ModelChoiceField(queryset=queries.amenity_options(), required=False)
+    # Checkboxes, so a customer can tick several amenities; a venue must have all of them.
+    amenities = forms.ModelMultipleChoiceField(
+        queryset=queries.amenity_options(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
     start = forms.DateTimeField(
         required=False, widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
     )

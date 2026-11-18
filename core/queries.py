@@ -41,7 +41,7 @@ def amenity_options():
 # ---------- Venue list page: /venues/ ----------
 
 def search_venues(building=None, venue_type=None, min_capacity=None,
-                  amenity=None, start=None, end=None):
+                  amenities=None, start=None, end=None):
     """Venues matching the filters; any filter left as None is skipped."""
     venues = Venue.objects.select_related('building')
 
@@ -51,8 +51,10 @@ def search_venues(building=None, venue_type=None, min_capacity=None,
         venues = venues.filter(venue_type=venue_type)
     if min_capacity:
         venues = venues.filter(capacity__gte=min_capacity)
-    if amenity:
+    for amenity in amenities or []:
         venues = venues.filter(venue_amenities__amenity=amenity)
+    if amenities:
+        venues = venues.distinct()
 
     if start and end:
         # Two time ranges overlap when each one starts before the other ends.

@@ -24,7 +24,7 @@ class VenueListView(LoginRequiredMixin, ListView):
                 building=f['building'],
                 venue_type=f['type'],
                 min_capacity=f['min_capacity'],
-                amenity=f['amenity'],
+                amenities=f['amenities'],
                 start=f['start'],
                 end=f['end'],
             )
