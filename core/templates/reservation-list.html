@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}State Spaces | My Reservations{% endblock %}
+
+{% block content %}
+    <h2>My Reservations</h2>
+    <ul>
+        {% for reservation in reservations %}
+            <li>
+                <a href="{% url 'core:reservation-detail' reservation.pk %}">{{ reservation.reservation_id }}</a>
+                - {{ reservation.venue.venue_name }}, {{ reservation.venue.building.building_name }}
+                ({{ reservation.start_datetime }} to {{ reservation.end_datetime }})
+            </li>
+        {% empty %}
+            <li>You have not made any reservations yet.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'core:venue-list' %}">Back to Venues</a>
+{% endblock %}

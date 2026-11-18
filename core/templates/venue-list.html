@@ -3,5 +3,26 @@
 {% block title %}State Spaces | Venues{% endblock %}
 
 {% block content %}
-<h1>State Spaces</h1>
+    <h1>State Spaces</h1>
+    <a href="{% url 'core:reservation-list' %}">My Reservations</a>
+
+    <h2>Find a Venue</h2>
+    <form method="GET">
+        {{ filter_form.as_p }}
+        <button type="submit">Search</button>
+        <a href="{% url 'core:venue-list' %}">Clear filters</a>
+    </form>
+
+    <h2>All Venues</h2>
+    <ul>
+        {% for venue in venues %}
+            <li>
+                <a href="{% url 'core:venue-detail' venue.pk %}">{{ venue.venue_name }}</a>
+                - {{ venue.venue_type }}, {{ venue.building.building_name }}
+                (Capacity: {{ venue.capacity }})
+            </li>
+        {% empty %}
+            <li>No venues match your filters.</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

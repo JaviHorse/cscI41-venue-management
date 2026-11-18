@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}State Spaces | {{ venue.venue_name }}{% endblock %}
+
+{% block content %}
+    <h2>{{ venue.venue_name }}</h2>
+
+    <h3>Venue Information</h3>
+    <ul>
+        <li>Type: {{ venue.venue_type }}</li>
+        <li>Floor: {{ venue.floor }}</li>
+        <li>Floor Area: {{ venue.floor_area_sqm }} sqm</li>
+        <li>Capacity: {{ venue.capacity }}</li>
+    </ul>
+
+    <h3>Location</h3>
+    <ul>
+        <li>Building: {{ venue.building.building_name }}</li>
+        <li>Address: {{ venue.building.street }}, {{ venue.building.district }}, {{ venue.building.city }}</li>
+    </ul>
+
+    <h3>Agent</h3>
+    {% if assignment %}
+        <p>{{ assignment.agent }}</p>
+    {% else %}
+        <p>No agent is assigned to this venue right now.</p>
+    {% endif %}
+
+    <h3>Amenities:</h3>
+    <ul>
+        {% for amenity in amenities %}
+            <li>{{ amenity.amenity.amenity_name }} - {{ amenity.description }} (Quantity: {{ amenity.quantity }})</li>
+        {% empty %}
+            <li>No amenities recorded.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Make a Reservation</h3>
+    {# Only accounts linked to a Customer can book (User -> Profile -> Customer). #}
+    {% if request.user.profile.customer %}
+        {% if renovations %}
+            <p>This venue is currently under renovation.</p>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ reservation_form.as_p }}
+            <button type="submit">Reserve</button>
+        </form>
+    {% else %}
+        <p>Only customer accounts can make reservations. Your account, {{ request.user }}, is not linked to a customer.</p>
+    {% endif %}
+
+    <a href="{% url 'core:venue-list' %}">Back to Venues</a>
+{% endblock %}
