@@ -31,12 +31,12 @@ def _reservation_overlaps_renovation(reservation, renovation):
 
 @transaction.atomic
 def create_reservation(
-    reservation_id,
     venue_id,
     customer_id,
     start_datetime,
     end_datetime,
     expected_participants,
+    reservation_id=None,
 ):
     venue = Venue.objects.get(pk=venue_id)
 
@@ -66,6 +66,10 @@ def create_reservation(
             "This venue is already reserved during that period."
         )
 
+    # Generate a new reservation id if none was provided
+    if reservation_id is None:
+        reservation_id = next_id(Reservation)
+    
     candidate = Reservation(
         reservation_id=reservation_id,
         venue_id=venue_id,
@@ -96,11 +100,11 @@ def create_reservation(
 
 @transaction.atomic
 def create_renovation(
-    renovation_id,
     venue_id,
     date_started,
     date_completed=None,
     remarks=None,
+    renovation_id=None
 ):
     if date_completed is not None:
         if date_completed < date_started:
@@ -130,6 +134,10 @@ def create_renovation(
             "This venue has an overlapping renovation."
         )
 
+    # Generate a new renovation id if none is provided
+    if renovation_id is None:
+        renovation_id = next_id(Renovation)
+        
     candidate = Renovation(
         renovation_id=renovation_id,
         venue_id=venue_id,
@@ -157,13 +165,13 @@ def create_renovation(
     return candidate
 
 def next_id(model):
-    ''''
+    """
     Get every id in the table, then splice out the prefix.
     For example, BLDG1005 -> 1005
     Take the biggest number and add 1, with default at 1000 + 1.
     Put the prefix back in front and return it.
     Use this whenever we make a new record.
-    '''
+    """
     ids = model.objects.values_list('pk', flat=True)
     numbers = [int(i[4:]) for i in ids]
     return f"{model.ID_PREFIX}{max(numbers, default=1000) + 1:04d}"
