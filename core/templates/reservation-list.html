@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}State Spaces | My Reservations{% endblock %}
 
@@ -11,6 +12,9 @@
 <div class="stack">
     {% for reservation in reservations %}
         <a class="card row-card" href="{% url 'core:reservation-detail' reservation.pk %}">
+            {% with 'img/venues/'|add:reservation.venue.pk|add:'.jpg' as photo %}
+                <img class="thumb" src="{% static photo %}" alt="{{ reservation.venue.venue_name }}">
+            {% endwith %}
             <div class="main">
                 <p class="muted small">{{ reservation.reservation_id }}</p>
                 <h3>{{ reservation.venue.venue_name }}</h3>

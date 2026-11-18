@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}State Spaces | Venues{% endblock %}
 
@@ -23,6 +24,9 @@
         <div class="grid">
             {% for venue in venues %}
                 <article class="card venue-card">
+                    {% with 'img/venues/'|add:venue.pk|add:'.jpg' as photo %}
+                        <img class="venue-photo" src="{% static photo %}" alt="{{ venue.venue_name }}">
+                    {% endwith %}
                     <div class="card-top">
                         <span class="chip">{{ venue.venue_type }}</span>
                         {% if filter_form.is_valid and filter_form.cleaned_data.start %}

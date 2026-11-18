@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}State Spaces | Reservation {{ reservation.reservation_id }}{% endblock %}
 
@@ -6,6 +7,9 @@
 <a class="back" href="{% url 'core:reservation-list' %}">← Back to My Reservations</a>
 
 <div class="card">
+    {% with 'img/venues/'|add:reservation.venue.pk|add:'.jpg' as photo %}
+        <img class="venue-photo banner" src="{% static photo %}" alt="{{ reservation.venue.venue_name }}">
+    {% endwith %}
     <div class="summary-head">
         <div>
             <p class="muted small">Reservation</p>

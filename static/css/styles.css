@@ -1,5 +1,3 @@
-/* State Spaces - basic styling for all pages */
-
 :root {
     --primary: #003A6C;
     --primary-dark: #002649;
@@ -51,8 +49,6 @@ a {
     color: var(--primary);
 }
 
-/* ---------- Header ---------- */
-
 .site-header {
     display: flex;
     flex-wrap: wrap;
@@ -97,8 +93,6 @@ a {
 .user form {
     margin: 0;
 }
-
-/* ---------- Page layout ---------- */
 
 #content {
     max-width: 1180px;
@@ -172,8 +166,6 @@ a {
     font-size: 13px;
 }
 
-/* ---------- Buttons ---------- */
-
 .btn {
     display: inline-block;
     padding: 12px 20px;
@@ -224,8 +216,6 @@ a:focus-visible {
     outline: 3px solid var(--primary-soft);
     outline-offset: 2px;
 }
-
-/* ---------- Forms (works with {{ form.as_p }} and {{ form.as_div }}) ---------- */
 
 form p,
 form > div {
@@ -280,8 +270,6 @@ select:focus {
     font-weight: 700;
 }
 
-/* ---------- Badges and chips ---------- */
-
 .badge,
 .chip {
     display: inline-block;
@@ -308,8 +296,6 @@ select:focus {
 }
 
 .alert-amber { background: var(--amber-soft); color: var(--amber); }
-
-/* ---------- Venue cards ---------- */
 
 .venue-card {
     display: flex;
@@ -342,7 +328,27 @@ select:focus {
     color: var(--text);
 }
 
-/* ---------- Venue detail ---------- */
+.venue-photo {
+    display: block;
+    width: calc(100% + 48px);
+    max-width: none;
+    margin: -24px -24px 18px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: var(--field);
+}
+.banner {
+    aspect-ratio: 3 / 1;
+}
+.thumb {
+    flex: none;
+    width: 96px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background: var(--field);
+}
 
 .detail-section {
     padding-top: 18px;
@@ -370,8 +376,6 @@ select:focus {
     position: sticky;
     top: 24px;
 }
-
-/* ---------- Reservations ---------- */
 
 .row-card {
     display: flex;
@@ -433,14 +437,10 @@ dd {
     margin: 0 0 10px;
 }
 
-/* ---------- Login page ---------- */
-
 .auth {
     max-width: 420px;
     margin: 40px auto;
 }
-
-/* ---------- Phones ---------- */
 
 @media (max-width: 800px) {
     .layout,
@@ -457,8 +457,6 @@ dd {
     }
 }
 
-/* ---------- Layout: Big search card ---------- */
-
 .venue-browser {
     grid-template-columns: 1fr;
 }
@@ -468,8 +466,6 @@ dd {
     border: 0;
 }
 
-/* Filters on a 12-column grid: Building, Type, Min capacity and Amenity
-   share the first row; Start, End and the button share the second. */
 .venue-browser > aside form {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -535,8 +531,6 @@ dd {
     border: 1px solid var(--line);
     border-radius: var(--radius);
 }
-
-/* ---------- Style: Elevated ---------- */
 
 .card {
     border: 0;

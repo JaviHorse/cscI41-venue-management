@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}State Spaces | {{ venue.venue_name }}{% endblock %}
 
@@ -7,6 +8,9 @@
 
 <div class="layout layout-detail">
     <section class="card">
+        {% with 'img/venues/'|add:venue.pk|add:'.jpg' as photo %}
+            <img class="venue-photo" src="{% static photo %}" alt="{{ venue.venue_name }}">
+        {% endwith %}
         <div class="card-top">
             <span class="chip">{{ venue.venue_type }}</span>
             {% if renovations %}
@@ -53,7 +57,6 @@
 
     <aside class="card sticky">
         <h2>Make a Reservation</h2>
-        {# Only accounts linked to a Customer can book (User -> Profile -> Customer). #}
         {% if request.user.profile.customer %}
             {% if renovations %}
                 <p class="alert alert-amber">This venue is under renovation right now. Bookings that overlap the renovation will not go through.</p>
