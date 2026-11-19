@@ -15,9 +15,10 @@ def validate_past_date(value):
             "Date must be earlier than the current date."
         )
 
+
+# Every primary key is a system-generated 7-digit code, ex. 1000001
 # Reference: https://docs.djangoproject.com/en/6.0/ref/validators/#regexvalidator
-def prefixed_id_validator(prefix):
-    return RegexValidator(
-        regex=rf'^{prefix}[0-9]{{4}}$',
-        message=f'ID must be "{prefix}" followed by 4 digits, ex. {prefix}1001.'
-    )
+seven_digit_id_validator = RegexValidator(
+    regex=r'^[0-9]{7}$',
+    message='ID must be exactly 7 digits, ex. 1000001'
+)

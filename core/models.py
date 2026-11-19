@@ -1,16 +1,14 @@
 
 from django.db import models
 from django.utils import timezone
-from .validators import validate_not_future, validate_past_date, prefixed_id_validator
+from .validators import validate_not_future, validate_past_date, seven_digit_id_validator
 
 # 1. BUILDING
 class Building(models.Model):
-    ID_PREFIX = 'BLDG'
-
     building_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Building_ID'
     )
     building_name = models.CharField(max_length=100, db_column='Building_Name')
@@ -30,12 +28,10 @@ class Building(models.Model):
 
 # 2. AGENT
 class Agent(models.Model):
-    ID_PREFIX = 'AGNT'
-
     agent_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Agent_ID'
     )
     first_name = models.CharField(max_length=50, db_column='First_Name')
@@ -56,12 +52,10 @@ class Agent(models.Model):
 
 # 3. VENUE
 class Venue(models.Model):
-    ID_PREFIX = 'VENU'
-
     venue_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Venue_ID'
     )
     venue_name = models.CharField(max_length=100, db_column='Venue_Name')
@@ -95,12 +89,10 @@ class Venue(models.Model):
 
 # 4. VENUE_ASSIGNMENT
 class VenueAssignment(models.Model):
-    ID_PREFIX = 'ASGN'
-
     assignment_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Assignment_ID'
     )
     start_date = models.DateField(db_column='Start_Date')
@@ -137,11 +129,10 @@ class VenueAssignment(models.Model):
 
 # 5. RENOVATION
 class Renovation(models.Model):
-    ID_PREFIX = 'RENO'
     renovation_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Renovation_ID'
     )
     date_started = models.DateField(
@@ -185,11 +176,10 @@ class Renovation(models.Model):
 
 # 6. AMENITY_TYPE
 class AmenityType(models.Model):
-    ID_PREFIX = 'AMTY'
     amenity_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Amenity_ID'
     )
     amenity_name = models.CharField(
@@ -206,11 +196,10 @@ class AmenityType(models.Model):
 
 # 7. VENUE_AMENITY
 class VenueAmenity(models.Model):
-    ID_PREFIX = 'VAMN'
     venue_amenity_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Venue_Amenity_ID'
     )
     description = models.CharField(max_length=150, db_column='Description')
@@ -253,11 +242,10 @@ class VenueAmenity(models.Model):
 
 # 8. CUSTOMER
 class Customer(models.Model):
-    ID_PREFIX = 'CUST'
     customer_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Customer_ID'
     )
     first_name = models.CharField(max_length=50, db_column='First_Name')
@@ -287,11 +275,10 @@ class Customer(models.Model):
 
 # 9. RESERVATION
 class Reservation(models.Model):
-    ID_PREFIX = 'RSVN'
     reservation_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
-        validators=[prefixed_id_validator(ID_PREFIX)],
+        validators=[seven_digit_id_validator],
         db_column='Reservation_ID'
     )
     start_datetime = models.DateTimeField(db_column='Start_DateTime')

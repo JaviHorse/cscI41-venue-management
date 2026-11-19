@@ -166,13 +166,18 @@ def create_renovation(
 
 def next_id(model):
     """
-    Get every id in the table, then splice out the prefix.
-    For example, BLDG1005 -> 1005
-    Take the biggest number and add 1, with default at 1000 + 1.
-    Put the prefix back in front and return it.
-    Use this whenever we make a new record.
+    Return the next 7-digit ID for the table, ex. 1000005 -> 1000006.
+    Empty tables start at 1000001.
+    Use this whenever we make a new record. Do not type IDs manually.
     """
-    ids = model.objects.values_list('pk', flat=True)
-    numbers = [int(i[4:]) for i in ids]
-    return f"{model.ID_PREFIX}{max(numbers, default=1000) + 1:04d}"
+    last = model.objects.aggregate(last=models.Max('pk'))['last']
+    number = int(last) + 1 if last else 1000001
+    if number > 9999999:
+        raise ValidationError(
+            # Reference: https://stackoverflow.com/questions/44602786/how-to-get-table-name-from-django-filter-objects
+            f"No 7-digit IDs left for {model._meta.db_table}."
+        )
+    return f"{number:07d}"
+    
+    
 
