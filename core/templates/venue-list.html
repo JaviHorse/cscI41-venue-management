@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}State Spaces | Venues{% endblock %}
+
+{% block content %}
+<div class="layout venue-browser">
+    <aside class="card sticky">
+        <h2>Find a Venue</h2>
+        <p class="muted">Pick a start and end time to see only the venues that are free.</p>
+        <form method="GET">
+            {{ filter_form.non_field_errors }}
+            {% for field in filter_form %}
+                {% if field.name == "amenities" %}
+                    {% with ticked=field.value|length %}
+                    <div>
+                        <span class="label">{{ field.label }}:</span>
+                        <details class="dropdown">
+                            <summary>
+                                {% if ticked %}
+                                    <span>Selected</span>
+                                    <span class="count">{{ ticked }}</span>
+                                {% else %}
+                                    <span>Any amenity</span>
+                                {% endif %}
+                            </summary>
+                            <div class="dropdown-panel">
+                                <p class="dropdown-title">Venue must have all of these</p>
+                                {% for checkbox in field %}
+                                    <label class="check-option" for="{{ checkbox.id_for_label }}">
+                                        <span>{{ checkbox.choice_label }}</span>
+                                        {{ checkbox.tag }}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    </div>
+                    {% endwith %}
+                {% else %}
+                    <div>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-block">Check Availability</button>
+        </form>
+        <a class="link-muted" href="{% url 'core:venue-list' %}">Clear filters</a>
+    </aside>
+
+    <section>
+        <div class="section-head">
+            <h2>Venues</h2>
+            <span class="count">{{ venues|length }}</span>
+        </div>
+
+        <div class="grid">
+            {% for venue in venues %}
+                <article class="card venue-card">
+                    {% with 'img/venues/'|add:venue.pk|add:'.jpg' as photo %}
+                        <img class="venue-photo" src="{% static photo %}" alt="{{ venue.venue_name }}">
+                    {% endwith %}
+                    <div class="card-top">
+                        <span class="chip">{{ venue.venue_type }}</span>
+                        {% if filter_form.is_valid and filter_form.cleaned_data.start %}
+                            <span class="badge badge-green">Available</span>
+                        {% endif %}
+                    </div>
+                    <h3>{{ venue.venue_name }}</h3>
+                    <p class="muted">{{ venue.building.building_name }} · Floor {{ venue.floor }}</p>
+                    <ul class="facts">
+                        <li><strong>{{ venue.capacity }}</strong> people</li>
+                        <li><strong>{{ venue.floor_area_sqm }}</strong> sqm</li>
+                    </ul>
+                    <a class="btn btn-primary btn-block" href="{% url 'core:venue-detail' venue.pk %}">View Venue</a>
+                </article>
+            {% empty %}
+                <p class="card empty">No venues match your filters.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

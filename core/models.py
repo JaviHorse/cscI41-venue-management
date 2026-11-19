@@ -91,7 +91,8 @@ class Venue(models.Model):
 
     def __str__(self):
         return self.venue_name
-    
+
+
 # 4. VENUE_ASSIGNMENT
 class VenueAssignment(models.Model):
     ID_PREFIX = 'ASGN'

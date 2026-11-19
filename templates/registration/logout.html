@@ -1,4 +1,11 @@
-<form method="post" action="{%url 'logout' %}">
-    {%csrf_token%}
-    <button type="submit">Logout</button>
-</form>
+{% extends "base.html" %}
+
+{% block title %}State Spaces | Logged Out{% endblock %}
+
+{% block content %}
+<div class="card auth">
+    <h2>You're Logged Out</h2>
+    <p>Thanks for using State Spaces.</p>
+    <a class="btn btn-primary btn-block" href="{% url 'login' %}">Log In Again</a>
+</div>
+{% endblock %}

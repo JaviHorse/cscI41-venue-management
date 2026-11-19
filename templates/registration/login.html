@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}State Spaces | Home{% endblock %}
+{% block title %}State Spaces | Log In{% endblock %}
 
 {% block content %}
+<div class="card auth">
+    <h2>Log In</h2>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Login</button>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
     </form>
-    <a href="{% url 'password_reset' %}">Forgot password?</a>
+    <a class="link-muted" href="{% url 'password_reset' %}">Forgot password?</a>
+</div>
 {% endblock %}

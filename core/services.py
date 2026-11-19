@@ -137,7 +137,7 @@ def create_renovation(
     # Generate a new renovation id if none is provided
     if renovation_id is None:
         renovation_id = next_id(Renovation)
-        
+
     candidate = Renovation(
         renovation_id=renovation_id,
         venue_id=venue_id,
@@ -175,3 +175,4 @@ def next_id(model):
     ids = model.objects.values_list('pk', flat=True)
     numbers = [int(i[4:]) for i in ids]
     return f"{model.ID_PREFIX}{max(numbers, default=1000) + 1:04d}"
+
