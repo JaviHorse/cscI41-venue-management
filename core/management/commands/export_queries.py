@@ -41,9 +41,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Sample inputs, as if a customer had typed them into the page.
-        building = Building(pk='BLDG1001')
-        amenity = AmenityType(pk='AMTY1001')
-        venue = Venue(pk='00001001')
+        building = Building(pk='1000001')
+        amenity = AmenityType(pk='1000001')
+        venue = Venue(pk='1000001')
         user = User(pk=1)
         start = timezone.make_aware(datetime(2027, 1, 10, 10, 0))
         end = timezone.make_aware(datetime(2027, 1, 10, 11, 0))
@@ -60,30 +60,30 @@ class Command(BaseCommand):
              'GET /venues/',
              queries.amenity_options()),
             ('Venue search by building, type, capacity and amenity',
-             'GET /venues/?building=BLDG1001&type=Gym&min_capacity=100&amenities=AMTY1001',
+             'GET /venues/?building=1000001&type=Gym&min_capacity=100&amenities=1000001',
              queries.search_venues(building=building, venue_type='Gym',
                                    min_capacity=100, amenities=[amenity])),
             ('Available venues: no overlapping reservation or renovation',
              'GET /venues/?start=2027-01-10T10:00&end=2027-01-10T11:00',
              queries.search_venues(start=start, end=end)),
             ('Venue details with its building',
-             'GET /venues/00001001/',
+             'GET /venues/1000001/',
              queries.venue_with_building().filter(pk=venue.pk)),
             ('Amenities installed in the venue',
-             'GET /venues/00001001/',
+             'GET /venues/1000001/',
              queries.venue_amenities(venue)),
             ('Agent currently assigned to the venue',
-             'GET /venues/00001001/',
+             'GET /venues/1000001/',
              queries.current_agent_assignment(venue, today=today)[:1]),
             ('Ongoing renovations of the venue',
-             'GET /venues/00001001/',
+             'GET /venues/1000001/',
              queries.ongoing_renovations(venue, today=today)),
             ("Logged-in customer's reservations",
              'GET /reservations/',
              queries.customer_reservations(user)),
             ('Reservation summary (own reservations only)',
-             'GET /reservations/RSVN1001/',
-             queries.customer_reservations(user).filter(pk='RSVN1001')),
+             'GET /reservations/1000001/',
+             queries.customer_reservations(user).filter(pk='1000001')),
         ]
 
         lines = [
