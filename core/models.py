@@ -1,13 +1,14 @@
 
 from django.db import models
 from django.utils import timezone
-from .validators import validate_not_future, validate_past_date
+from .validators import validate_not_future, validate_past_date, seven_digit_id_validator
 
 # 1. BUILDING
 class Building(models.Model):
     building_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Building_ID'
     )
     building_name = models.CharField(max_length=100, db_column='Building_Name')
@@ -28,8 +29,9 @@ class Building(models.Model):
 # 2. AGENT
 class Agent(models.Model):
     agent_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Agent_ID'
     )
     first_name = models.CharField(max_length=50, db_column='First_Name')
@@ -51,8 +53,9 @@ class Agent(models.Model):
 # 3. VENUE
 class Venue(models.Model):
     venue_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Venue_ID'
     )
     venue_name = models.CharField(max_length=100, db_column='Venue_Name')
@@ -82,12 +85,14 @@ class Venue(models.Model):
 
     def __str__(self):
         return self.venue_name
-    
+
+
 # 4. VENUE_ASSIGNMENT
 class VenueAssignment(models.Model):
     assignment_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Assignment_ID'
     )
     start_date = models.DateField(db_column='Start_Date')
@@ -125,8 +130,9 @@ class VenueAssignment(models.Model):
 # 5. RENOVATION
 class Renovation(models.Model):
     renovation_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Renovation_ID'
     )
     date_started = models.DateField(
@@ -171,8 +177,9 @@ class Renovation(models.Model):
 # 6. AMENITY_TYPE
 class AmenityType(models.Model):
     amenity_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Amenity_ID'
     )
     amenity_name = models.CharField(
@@ -190,8 +197,9 @@ class AmenityType(models.Model):
 # 7. VENUE_AMENITY
 class VenueAmenity(models.Model):
     venue_amenity_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Venue_Amenity_ID'
     )
     description = models.CharField(max_length=150, db_column='Description')
@@ -235,8 +243,9 @@ class VenueAmenity(models.Model):
 # 8. CUSTOMER
 class Customer(models.Model):
     customer_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Customer_ID'
     )
     first_name = models.CharField(max_length=50, db_column='First_Name')
@@ -267,8 +276,9 @@ class Customer(models.Model):
 # 9. RESERVATION
 class Reservation(models.Model):
     reservation_id = models.CharField(
-        max_length=8,
+        max_length=7,
         primary_key=True,
+        validators=[seven_digit_id_validator],
         db_column='Reservation_ID'
     )
     start_datetime = models.DateTimeField(db_column='Start_DateTime')

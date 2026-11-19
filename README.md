@@ -127,3 +127,11 @@ python manage.py showmigrations core
 ```
 
 You can inspect the database using the SQL statements in `database/verification.sql`.
+
+## IDs
+
+The primary keys we use in the tables follow this convention:
+7-digit code, ex. `1000001` as seen in the specification. 
+
+- Note: IDs are system-generated (as we indicated in our data dictionary). When creating a new record, use next_id(Model) function from `core/services.py` do not type the IDs manually yourself.
+- Note: After pulling these changes, delete `db.sqlite3`, run `migrate` then `seed_data`, then `createsuperuser`

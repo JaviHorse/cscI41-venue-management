@@ -31,12 +31,12 @@ def _reservation_overlaps_renovation(reservation, renovation):
 
 @transaction.atomic
 def create_reservation(
-    reservation_id,
     venue_id,
     customer_id,
     start_datetime,
     end_datetime,
     expected_participants,
+    reservation_id=None,
 ):
     venue = Venue.objects.get(pk=venue_id)
 
@@ -66,6 +66,10 @@ def create_reservation(
             "This venue is already reserved during that period."
         )
 
+    # Generate a new reservation id if none was provided
+    if reservation_id is None:
+        reservation_id = next_id(Reservation)
+    
     candidate = Reservation(
         reservation_id=reservation_id,
         venue_id=venue_id,
@@ -96,11 +100,11 @@ def create_reservation(
 
 @transaction.atomic
 def create_renovation(
-    renovation_id,
     venue_id,
     date_started,
     date_completed=None,
     remarks=None,
+    renovation_id=None
 ):
     if date_completed is not None:
         if date_completed < date_started:
@@ -130,6 +134,10 @@ def create_renovation(
             "This venue has an overlapping renovation."
         )
 
+    # Generate a new renovation id if none is provided
+    if renovation_id is None:
+        renovation_id = next_id(Renovation)
+
     candidate = Renovation(
         renovation_id=renovation_id,
         venue_id=venue_id,
@@ -155,3 +163,21 @@ def create_renovation(
     candidate.save()
 
     return candidate
+
+def next_id(model):
+    """
+    Return the next 7-digit ID for the table, ex. 1000005 -> 1000006.
+    Empty tables start at 1000001.
+    Use this whenever we make a new record. Do not type IDs manually.
+    """
+    last = model.objects.aggregate(last=models.Max('pk'))['last']
+    number = int(last) + 1 if last else 1000001
+    if number > 9999999:
+        raise ValidationError(
+            # Reference: https://stackoverflow.com/questions/44602786/how-to-get-table-name-from-django-filter-objects
+            f"No 7-digit IDs left for {model._meta.db_table}."
+        )
+    return f"{number:07d}"
+    
+    
+
