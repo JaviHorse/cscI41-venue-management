@@ -45,17 +45,17 @@ class Command(BaseCommand):
 
         # Start with BUILDING since AGENT and VENUE both reference it
         # Each building has its own ID, name, location, and acquisition date
-        # Using 1001-1005 as fixed sample IDs for easier referencing later
+        # Using 1000001-1000005 as fixed sample IDs for easier referencing later
         buildings = [
-            ("BLDG1001", "Ateneo Events Center", "Katipunan Avenue",
+            ("1000001", "Ateneo Events Center", "Katipunan Avenue",
              "Loyola Heights", "Quezon City", date(2015, 6, 1)),
-            ("BLDG1002", "Rizal Convention Hall", "Ortigas Avenue",
+            ("1000002", "Rizal Convention Hall", "Ortigas Avenue",
              "San Antonio", "Pasig City", date(2018, 3, 15)),
-            ("BLDG1003", "Makati Corporate Center", "Ayala Avenue",
+            ("1000003", "Makati Corporate Center", "Ayala Avenue",
              "Bel-Air", "Makati City", date(2020, 8, 10)),
-            ("BLDG1004", "Manila Cultural Center", "Roxas Boulevard",
+            ("1000004", "Manila Cultural Center", "Roxas Boulevard",
              "Malate", "Manila", date(2012, 11, 20)),
-            ("BLDG1005", "BGC Conference Tower", "5th Avenue",
+            ("1000005", "BGC Conference Tower", "5th Avenue",
              "Bonifacio Global City", "Taguig City", date(2022, 1, 5)),
         ]
 
@@ -78,11 +78,11 @@ class Command(BaseCommand):
         # Each agent is assigned to a building through Building_ID
         # The buildings must already exist before inserting agents kasi we'll run into foreign key issues
         agents = [
-            ("AGNT1001", "Maria", "Santos", "BLDG1001"),
-            ("AGNT1002", "Juan", "Dela Cruz", "BLDG1002"),
-            ("AGNT1003", "Angela", "Reyes", "BLDG1003"),
-            ("AGNT1004", "Carlos", "Mendoza", "BLDG1004"),
-            ("AGNT1005", "Patricia", "Garcia", "BLDG1005"),
+            ("1000001", "Maria", "Santos", "1000001"),
+            ("1000002", "Juan", "Dela Cruz", "1000002"),
+            ("1000003", "Angela", "Reyes", "1000003"),
+            ("1000004", "Carlos", "Mendoza", "1000004"),
+            ("1000005", "Patricia", "Garcia", "1000005"),
         ]
 
         counts["AGENT"] = 0
@@ -104,11 +104,11 @@ class Command(BaseCommand):
     
         # We'll also use these capacities later when testing
         venues = [
-            ("VENU1001", "Blue Eagle Gym", "Gym", 1, 450.0, 300, "BLDG1001"),
-            ("VENU1002", "Rizal Ballroom", "Ballroom", 2, 300.0, 200, "BLDG1002"),
-            ("VENU1003", "Executive Meeting Room", "Meeting Room", 5, 80.0, 30, "BLDG1003"),
-            ("VENU1004", "Cultural Exhibition Hall", "Exhibition Hall", 1, 600.0, 400, "BLDG1004"),
-            ("VENU1005", "BGC Function Room", "Function Room", 10, 150.0, 100, "BLDG1005"),
+            ("1000001", "Blue Eagle Gym", "Gym", 1, 450.0, 300, "1000001"),
+            ("1000002", "Rizal Ballroom", "Ballroom", 2, 300.0, 200, "1000002"),
+            ("1000003", "Executive Meeting Room", "Meeting Room", 5, 80.0, 30, "1000003"),
+            ("1000004", "Cultural Exhibition Hall", "Exhibition Hall", 1, 600.0, 400, "1000004"),
+            ("1000005", "BGC Function Room", "Function Room", 10, 150.0, 100, "1000005"),
         ]
 
         counts["VENUE"] = 0
@@ -133,11 +133,11 @@ class Command(BaseCommand):
         # It also keeps track of the assignment's start and end dates
         # Since this references both AGENT and VENUE, those two tables need to be populated first
         assignments = [
-            ("ASGN1001", date(2026, 9, 1), date(2027, 8, 31), "AGNT1001", "VENU1001"),
-            ("ASGN1002", date(2026, 9, 1), date(2027, 8, 31), "AGNT1002", "VENU1002"),
-            ("ASGN1003", date(2026, 9, 1), date(2027, 8, 31), "AGNT1003", "VENU1003"),
-            ("ASGN1004", date(2026, 9, 1), date(2027, 8, 31), "AGNT1004", "VENU1004"),
-            ("ASGN1005", date(2026, 9, 1), date(2027, 8, 31), "AGNT1005", "VENU1005"),
+            ("1000001", date(2026, 9, 1), date(2027, 8, 31), "1000001", "1000001"),
+            ("1000002", date(2026, 9, 1), date(2027, 8, 31), "1000002", "1000002"),
+            ("1000003", date(2026, 9, 1), date(2027, 8, 31), "1000003", "1000003"),
+            ("1000004", date(2026, 9, 1), date(2027, 8, 31), "1000004", "1000004"),
+            ("1000005", date(2026, 9, 1), date(2027, 8, 31), "1000005", "1000005"),
         ]
 
         counts["VENUE_ASSIGNMENT"] = 0
@@ -158,16 +158,16 @@ class Command(BaseCommand):
         # Has start, end date, and short description
         # The last record has None as its completion date to signify that its an ongoing renovation
         renovations = [
-            ("RENO1001", date(2025, 1, 10), date(2025, 2, 10),
-             "Sound system upgrade", "VENU1001"),
-            ("RENO1002", date(2025, 3, 5), date(2025, 4, 1),
-             "Flooring replacement", "VENU1002"),
-            ("RENO1003", date(2025, 5, 12), date(2025, 5, 30),
-             "Lighting improvement", "VENU1003"),
-            ("RENO1004", date(2025, 7, 1), date(2025, 8, 15),
-             "Air conditioning upgrade", "VENU1004"),
-            ("RENO1005", date(2026, 10, 1), None,
-             "Interior repainting in progress", "VENU1005"),
+            ("1000001", date(2025, 1, 10), date(2025, 2, 10),
+             "Sound system upgrade", "1000001"),
+            ("1000002", date(2025, 3, 5), date(2025, 4, 1),
+             "Flooring replacement", "1000002"),
+            ("1000003", date(2025, 5, 12), date(2025, 5, 30),
+             "Lighting improvement", "1000003"),
+            ("1000004", date(2025, 7, 1), date(2025, 8, 15),
+             "Air conditioning upgrade", "1000004"),
+            ("1000005", date(2026, 10, 1), None,
+             "Interior repainting in progress", "1000005"),
         ]
 
         counts["RENOVATION"] = 0
@@ -188,11 +188,11 @@ class Command(BaseCommand):
         # Lists down the amenities that a venue has
         # Separate table so we don't have to repeatedly store the amenity names for every venue
         amenities = [
-            ("AMTY1001", "Projector"),
-            ("AMTY1002", "Sound System"),
-            ("AMTY1003", "Air Conditioning"),
-            ("AMTY1004", "Wi-Fi Router"),
-            ("AMTY1005", "Conference Tables"),
+            ("1000001", "Projector"),
+            ("1000002", "Sound System"),
+            ("1000003", "Air Conditioning"),
+            ("1000004", "Wi-Fi Router"),
+            ("1000005", "Conference Tables"),
         ]
 
         counts["AMENITY_TYPE"] = 0
@@ -213,11 +213,11 @@ class Command(BaseCommand):
         # Records quantity, description, and installation date
         # Venue_ID references VENUE while Amenity_ID references AMENITY_TYPE
         venue_amenities = [
-            ("VAMN1001", "HD projector", 2, date(2025, 2, 15), "VENU1001", "AMTY1001"),
-            ("VAMN1002", "Surround sound speakers", 4, date(2025, 4, 5), "VENU1002", "AMTY1002"),
-            ("VAMN1003", "Ceiling-mounted AC units", 3, date(2025, 6, 1), "VENU1003", "AMTY1003"),
-            ("VAMN1004", "High-speed wireless router", 5, date(2025, 8, 20), "VENU1004", "AMTY1004"),
-            ("VAMN1005", "Modular conference tables", 10, date(2026, 1, 15), "VENU1005", "AMTY1005"),
+            ("1000001", "HD projector", 2, date(2025, 2, 15), "1000001", "1000001"),
+            ("1000002", "Surround sound speakers", 4, date(2025, 4, 5), "1000002", "1000002"),
+            ("1000003", "Ceiling-mounted AC units", 3, date(2025, 6, 1), "1000003", "1000003"),
+            ("1000004", "High-speed wireless router", 5, date(2025, 8, 20), "1000004", "1000004"),
+            ("1000005", "Modular conference tables", 10, date(2026, 1, 15), "1000005", "1000005"),
         ]
 
         counts["VENUE_AMENITY"] = 0
@@ -240,11 +240,11 @@ class Command(BaseCommand):
         # Each customer has their own ID and personal information
         # These records will be referenced later in RESERVATION
         customers = [
-            ("CUST1001", "Javier", "Macasaet", "M", date(2000, 3, 12), "Quezon City"),
-            ("CUST1002", "Gabe", "Labariento", "R", date(1998, 7, 25), "Pasig City"),
-            ("CUST1003", "Erin", "Maranan", "A", date(2001, 1, 8), "Makati City"),
-            ("CUST1004", "CJ", "Landicho", "J", date(1997, 11, 19), "Manila"),
-            ("CUST1005", "Carl", "Basco", "C", date(1999, 5, 30), "Taguig City"),
+            ("1000001", "Javier", "Macasaet", "M", date(2000, 3, 12), "Quezon City"),
+            ("1000002", "Gabe", "Labariento", "R", date(1998, 7, 25), "Pasig City"),
+            ("1000003", "Erin", "Maranan", "A", date(2001, 1, 8), "Makati City"),
+            ("1000004", "CJ", "Landicho", "J", date(1997, 11, 19), "Manila"),
+            ("1000005", "Carl", "Basco", "C", date(1999, 5, 30), "Taguig City"),
         ]
 
         counts["CUSTOMER"] = 0
@@ -274,16 +274,16 @@ class Command(BaseCommand):
             )
 
         reservations = [
-            ("RSVN1001", local_dt(2027, 1, 10, 9),
-             local_dt(2027, 1, 10, 12), 150, "VENU1001", "CUST1001"),
-            ("RSVN1002", local_dt(2027, 1, 12, 13),
-             local_dt(2027, 1, 12, 17), 120, "VENU1002", "CUST1002"),
-            ("RSVN1003", local_dt(2027, 1, 15, 10),
-             local_dt(2027, 1, 15, 12), 20, "VENU1003", "CUST1003"),
-            ("RSVN1004", local_dt(2027, 1, 18, 8),
-             local_dt(2027, 1, 18, 16), 250, "VENU1004", "CUST1004"),
-            ("RSVN1005", local_dt(2027, 1, 20, 14),
-             local_dt(2027, 1, 20, 18), 80, "VENU1005", "CUST1005"),
+            ("1000001", local_dt(2027, 1, 10, 9),
+             local_dt(2027, 1, 10, 12), 150, "1000001", "1000001"),
+            ("1000002", local_dt(2027, 1, 12, 13),
+             local_dt(2027, 1, 12, 17), 120, "1000002", "1000002"),
+            ("1000003", local_dt(2027, 1, 15, 10),
+             local_dt(2027, 1, 15, 12), 20, "1000003", "1000003"),
+            ("1000004", local_dt(2027, 1, 18, 8),
+             local_dt(2027, 1, 18, 16), 250, "1000004", "1000004"),
+            ("1000005", local_dt(2027, 1, 20, 14),
+             local_dt(2027, 1, 20, 18), 80, "1000005", "1000005"),
         ]
 
         counts["RESERVATION"] = 0
