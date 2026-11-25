@@ -9,6 +9,7 @@ from django.db.models import Exists, OuterRef, Q
 from django.utils import timezone
 
 from .models import (
+    Agent,
     AmenityType,
     Building,
     Renovation,
@@ -36,6 +37,40 @@ def venue_type_options():
 
 def amenity_options():
     return AmenityType.objects.order_by('amenity_name')
+
+# ---------- Agent pages: /agent/ ----------
+# Reference used: https://docs.djangoproject.com/en/5.2/topics/db/queries/
+
+def agent_for_user(user):
+    """
+    Get the agent assigned to the user
+    """
+    return Agent.objects.filter(profile__user=user).first()
+
+def agent_venues(user, today=None):
+    """
+    Return the venues that the agent is currently managing.
+    """
+    today = today or timezone.localdate()
+
+    
+    current_assignment = VenueAssignment.objects.filter(
+        venue=OuterRef('pk'),                                      # subquery venues using its pk
+        agent__profile__user=user,                                 # where the current user is the agent
+        start_date__lte=today,                                     # and they started managing it on or before the current date
+    ).filter(Q(end_date__isnull=True) | Q(end_date__gte=today))    # make sure that the assignment is still valid
+
+    under_renovation = Renovation.objects.filter(
+        venue=OuterRef('pk'),
+        date_started__lte=today,
+    ).filter(Q(date_completed__isnull=True) | Q(date_completed__gte=today)) 
+
+    return(
+        Venue.objects.filter(Exists(current_assignment))
+        .annotate(is_under_renovation=Exists(under_renovation))
+        .select_related('building')
+        .order_by('building__building_name', 'venue_name')
+    )
 
 
 # ---------- Venue list page: /venues/ ----------
