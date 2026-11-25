@@ -72,6 +72,28 @@ def agent_venues(user, today=None):
         .order_by('building__building_name', 'venue_name')
     )
 
+def upcoming_venue_reservations(venue, now=None):
+    """
+    Return upcoming or ongoing venue reservations 
+    """
+    now = now or timezone.now()
+    return (
+        Reservation.objects.filter(venue=venue, end_datetime__gte=now)
+        .select_related('customer')
+        .order_by('start_datetime') # sort by nearest first
+    )
+
+def past_venue_reservations(venue, now=None):
+    """
+    Return reservations that have already ended
+    """
+    now = now or timezone.now()
+    return (
+        Reservation.objects.filter(venue=venue, end_datetime__lt=now)
+        .select_related('customer')
+        .order_by('-start_datetime') # sort by most recent first
+    )
+
 
 # ---------- Venue list page: /venues/ ----------
 
