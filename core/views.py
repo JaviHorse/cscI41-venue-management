@@ -34,7 +34,26 @@ class AgentVenueListView(AgentRequiredMixin, ListView):
     def get_queryset(self):
         return queries.agent_venues(self.request.user)
 
+class AgentVenueDetailView(AgentRequiredMixin, DetailView):
+    """
+    /agent/venies/<venue_id>/
+    Detail page of a venue that an agent manages.
+    Shows its reservations, renovation status, and amenities.
+    """
+    template_name = 'agent-venue-detail.html'
+    context_object_name = 'venue'
+    pk_url_kwarg = 'venue_id'
 
+    def get_queryset(self):
+        return queries.agent_venues(self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['upcoming_reservations'] = queries.upcoming_venue_reservations(self.object)
+        context['past_reservations'] = queries.past_venue_reservations(self.object)
+        context['renovation'] = queries.ongoing_renovations(self.object)
+        context['amenities'] = queries.venue_amenities(self.object)
+        return context
 
 class VenueListView(ListView):
     """/venues/ — all venues, narrowed by the filters in the URL query string.
