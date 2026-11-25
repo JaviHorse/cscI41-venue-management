@@ -3,6 +3,7 @@ from django.views.generic import RedirectView
 
 from .views import (
     AgentVenueListView,
+    AgentVenueDetailView,
     ReservationDetailView,
     ReservationListView,
     VenueDetailView,
@@ -18,6 +19,7 @@ app_name = 'core'
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='core:venue-list'), name='home'),
     path('agent/venues/', AgentVenueListView.as_view(), name='agent-venue-list'),
+    path('agent/venues/<str:venue_id>/', AgentVenueDetailView.as_view(), name='agent-venue-detail'),
     path('venues/', VenueListView.as_view(), name='venue-list'),
     path('venues/<str:venue_id>/', VenueDetailView.as_view(), name='venue-detail'),
     path('reservations/', ReservationListView.as_view(), name='reservation-list'),
