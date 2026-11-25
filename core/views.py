@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -8,6 +8,20 @@ from . import queries
 from .forms import ReservationForm, VenueFilterForm
 from .models import Customer
 from .services import create_reservation
+
+
+class AgentRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    # Reference: https://docs.djangoproject.com/en/6.1/topics/auth/default/#django.contrib.auth.mixins.UserPassesTestMixin
+    # Basically lets us write our own function that decides whether a user
+    # can access our page or not. Hence, the below
+
+    def test_func(self):
+        """
+        True = user has Agent profile. Let them through.
+        False = user has no Agent profile. Do not let them through.
+        """
+        self.agent = queries.agent_for_user(self.request.user)
+        return self.agent is not None
 
 
 class VenueListView(ListView):
