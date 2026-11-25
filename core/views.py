@@ -23,6 +23,18 @@ class AgentRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         self.agent = queries.agent_for_user(self.request.user)
         return self.agent is not None
 
+class AgentVenueListView(AgentRequiredMixin, ListView):
+    """
+    /agent/venues/
+    Here we display the venues that the agent is currently handling.
+    """
+    template_name = 'agent-venue-list.html'
+    context_object_name = 'venues'
+
+    def get_queryset(self):
+        return queries.agent_venues(self.request.user)
+
+
 
 class VenueListView(ListView):
     """/venues/ — all venues, narrowed by the filters in the URL query string.
