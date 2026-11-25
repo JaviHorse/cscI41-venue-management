@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from .views import (
+    AgentVenueListView,
     ReservationDetailView,
     ReservationListView,
     VenueDetailView,
@@ -16,6 +17,7 @@ app_name = 'core'
 # - route names are "<noun>-list" / "<noun>-detail", used as {% url 'core:venue-detail' venue.pk %}
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='core:venue-list'), name='home'),
+    path('agent/venues/', AgentVenueListView.as_view(), name='agent-venue-list'),
     path('venues/', VenueListView.as_view(), name='venue-list'),
     path('venues/<str:venue_id>/', VenueDetailView.as_view(), name='venue-detail'),
     path('reservations/', ReservationListView.as_view(), name='reservation-list'),
