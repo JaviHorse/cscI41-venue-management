@@ -36,7 +36,7 @@ class AgentVenueListView(AgentRequiredMixin, ListView):
 
 class AgentVenueDetailView(AgentRequiredMixin, DetailView):
     """
-    /agent/venies/<venue_id>/
+    /agent/venues/<venue_id>/
     Detail page of a venue that an agent manages.
     Shows its reservations, renovation status, and amenities.
     """
@@ -51,7 +51,7 @@ class AgentVenueDetailView(AgentRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['upcoming_reservations'] = queries.upcoming_venue_reservations(self.object)
         context['past_reservations'] = queries.past_venue_reservations(self.object)
-        context['renovation'] = queries.ongoing_renovations(self.object)
+        context['renovation'] = queries.ongoing_renovations(self.object).first()
         context['amenities'] = queries.venue_amenities(self.object)
         return context
 
