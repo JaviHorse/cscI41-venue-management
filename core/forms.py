@@ -1,5 +1,5 @@
 from django import forms
-from .models import Reservation
+from .models import Reservation, Renovation
 from . import queries
 
 
@@ -50,3 +50,10 @@ class VenueFilterForm(forms.Form):
         if start and end and start >= end:
             raise forms.ValidationError('End date/time must be later than start date/time.')
         return cleaned
+
+
+class RenovationForm(forms.ModelForm):
+    class Meta:
+        model = Renovation
+        fields = ['remarks']
+        
