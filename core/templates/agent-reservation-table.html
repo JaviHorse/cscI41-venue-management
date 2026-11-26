@@ -1,0 +1,32 @@
+{# Shared by the Upcoming and Past sections of agent-venue-detail.html (written once, used twice). #}
+{% if reservations %}
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Reservation</th>
+                    <th>Customer</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Participants</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.reservation_id }}</td>
+                        <td>
+                            {{ reservation.customer }}
+                            <span class="muted small">{{ reservation.customer.customer_location }}</span>
+                        </td>
+                        <td>{{ reservation.start_datetime|date:"D, M j, Y · g:i A" }}</td>
+                        <td>{{ reservation.end_datetime|date:"D, M j, Y · g:i A" }}</td>
+                        <td>{{ reservation.expected_participants }} / {{ reservation.venue.capacity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="muted">{{ empty_text }}</p>
+{% endif %}

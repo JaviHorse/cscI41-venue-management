@@ -530,21 +530,6 @@ dd {
     margin: 40px auto;
 }
 
-@media (max-width: 800px) {
-    .layout,
-    .layout-detail {
-        grid-template-columns: 1fr;
-    }
-
-    .sticky {
-        position: static;
-    }
-
-    #content {
-        padding: 20px 16px 40px;
-    }
-}
-
 .site-header {
     background: var(--primary);
     border-bottom: 0;
@@ -576,4 +561,75 @@ dd {
 .chip,
 .count {
     border-radius: 4px;
+}
+
+.report-card {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 24px;
+    align-items: center;
+}
+
+.report-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background: var(--field);
+}
+
+.report-main h3,
+.report-main .muted {
+    margin-bottom: 6px;
+}
+
+.report-main .facts {
+    margin-bottom: 12px;
+}
+
+.chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.table-card {
+    margin-top: 24px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table th {
+    padding: 10px 12px;
+    border-bottom: 1.5px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+}
+
+.data-table td .small {
+    display: block;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: 0;
 }

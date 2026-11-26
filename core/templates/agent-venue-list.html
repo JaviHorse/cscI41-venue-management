@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}State Spaces | My Venues{% endblock %}
+
+{% block content %}
+<div class="section-head">
+    <h2>My Venues</h2>
+    <span class="count">{{ venues|length }}</span>
+</div>
+<p class="muted">The venues you are assigned to today{% if view.agent %}, {{ view.agent }}{% endif %}.</p>
+
+<div class="stack">
+    {% for venue in venues %}
+        <article class="card report-card">
+            {% with 'img/venues/'|add:venue.pk|add:'.jpg' as photo %}
+                <img class="report-photo" src="{% static photo %}" alt="{{ venue.venue_name }}">
+            {% endwith %}
+
+            <div class="report-main">
+                <div class="card-top">
+                    <span class="chip">{{ venue.venue_type }}</span>
+                    {% if venue.is_under_renovation %}
+                        <span class="badge badge-amber">Under Renovation</span>
+                    {% else %}
+                        <span class="badge badge-green">Open for Booking</span>
+                    {% endif %}
+                </div>
+                <h3>{{ venue.venue_name }}</h3>
+                <p class="muted">Floor {{ venue.floor }}, {{ venue.building.building_name }}, {{ venue.building.street }}, {{ venue.building.district }}, {{ venue.building.city }}</p>
+                <ul class="facts">
+                    <li><strong>{{ venue.capacity }}</strong> people</li>
+                    <li><strong>{{ venue.floor_area_sqm }}</strong> sqm</li>
+                </ul>
+                <ul class="chip-list">
+                    {% for venue_amenity in venue.venue_amenities.all %}
+                        <li class="chip">{{ venue_amenity.amenity.amenity_name }} × {{ venue_amenity.quantity }}</li>
+                    {% empty %}
+                        <li class="muted small">No amenities recorded.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <a class="btn btn-primary" href="{% url 'core:agent-venue-detail' venue.pk %}">View Reservations</a>
+        </article>
+    {% empty %}
+        <div class="card empty">
+            <p>You are not assigned to any venues right now.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
