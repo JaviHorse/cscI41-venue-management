@@ -5,9 +5,9 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from . import queries
-from .forms import ReservationForm, VenueFilterForm
+from .forms import ReservationForm, VenueFilterForm, RenovationForm
 from .models import Customer
-from .services import create_reservation
+from .services import create_reservation, create_renovation, complete_renovation
 
 
 class AgentRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -53,7 +53,42 @@ class AgentVenueDetailView(AgentRequiredMixin, DetailView):
         context['past_reservations'] = queries.past_venue_reservations(self.object)
         context['renovation'] = queries.ongoing_renovations(self.object).first()
         context['amenities'] = queries.venue_amenities(self.object)
+        if 'renovation_form' not in context:
+            context['renovation_form'] = RenovationForm()
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        renovation_form = RenovationForm()
+        action = request.POST.get('action')
+
+        if action == 'start_renovation':
+            renovation_form = RenovationForm(request.POST)
+            if renovation_form.is_valid():
+                try:
+                    create_renovation(
+                        venue_id=self.object.pk,
+                        date_started=timezone.localdate(),
+                        remarks=renovation_form.cleaned_data['remarks'] or None,
+                    )
+                    return redirect('core:agent-venue-detail', venue_id=self.object.pk)
+                except ValidationError as error:
+                    for message in error.messages:
+                        renovation_form.add_error(None, message)
+
+        elif action == 'complete_renovation':
+            renovation = queries.ongoing_renovations(self.object).first()
+            if renovation is None:
+                renovation_form.add_error(None, 'This venue is not under renovation.')
+            else: 
+                try: 
+                    complete_renovation(renovation.pk)
+                    return redirect('core:agent-venue-detail', venue_id=self.object.pk)
+                except ValidationError as error:
+                    for message in error.messages:
+                        renovation_form.add_error(None, message)
+        return self.render_to_response(self.get_context_data(renovation_form=renovation_form))
+
 
 class VenueListView(ListView):
     """/venues/ — all venues, narrowed by the filters in the URL query string.
