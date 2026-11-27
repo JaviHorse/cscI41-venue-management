@@ -168,7 +168,7 @@ def create_renovation(
 def complete_renovation(renovation_id, date_completed=None):
     """
     Marks an ongoing renovation as done. date_completed is default today.
-    date_complted is the renovation's last day. The venue will reopen after it.
+    date_completed is the renovation's last day. The venue will reopen after it.
     """
     renovation = Renovation.objects.get(pk=renovation_id)
     date_completed = date_completed or timezone.localdate()

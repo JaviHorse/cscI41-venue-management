@@ -77,6 +77,7 @@ class AgentVenueDetailView(AgentRequiredMixin, DetailView):
                         renovation_form.add_error(None, message)
 
         elif action == 'complete_renovation':
+            renovation_form = RenovationForm(request.POST)
             renovation = queries.ongoing_renovations(self.object).first()
             if renovation is None:
                 renovation_form.add_error(None, 'This venue is not under renovation.')
