@@ -1,13 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
 from django.views.generic import DetailView, ListView
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from . import queries
-from .forms import ReservationForm, VenueFilterForm, RenovationForm
+from .forms import ReservationForm, VenueFilterForm, RenovationForm, VenueAmenityForm
 from .models import Customer
-from .services import create_reservation, create_renovation, complete_renovation
+from .services import create_reservation, create_renovation, complete_renovation, create_venue_amenity
 
 
 class AgentRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -89,6 +91,56 @@ class AgentVenueDetailView(AgentRequiredMixin, DetailView):
                     for message in error.messages:
                         renovation_form.add_error(None, message)
         return self.render_to_response(self.get_context_data(renovation_form=renovation_form))
+
+class AgentVenueAmenityCreateView(AgentRequiredMixin, CreateView):
+    """
+    /agent/venues/<venue_id>/amenities/new/
+    Adds an amenity to a venue that the agent manages.
+    """
+    form_class = VenueAmenityForm
+    template_name = 'agent-venue-amenity-form.html' # TODO: make this template
+
+    def get_venue(self):
+        # Make sure the venue is assigned to the agent
+        return get_object_or_404(queries.agent_venues(self.request.user), pk=self.kwargs['venue_id'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['venue'] = self.get_venue()
+        return context
+
+    def form_valid(self, form):
+        venue = self.get_venue()
+        try:
+            create_venue_amenity(venue_id=venue.pk, **form.cleaned_data)
+        except ValidationError as error:
+            for message in error.messages:
+                form.add_error(None, message)
+            return self.form_invalid(form)
+        return redirect('core:agent-venue-detail', venue_id=venue.pk)
+
+class AgentVenueAmenityUpdateView(AgentRequiredMixin, UpdateView):
+    """
+    /agent/venue-amenities/<venue_amenity_id>/<edit>/
+    Edits an amenity on a venue the agent manages.
+    """
+    form_class = VenueAmenityForm
+    template_name = 'agent-venue-amenity-form.html'
+    context_object_name = 'venue_amenity'
+    pk_url_kwarg = 'venue_amenity_id'
+
+    def get_queryset(self):
+        return queries.agent_venue_amenities(self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['venue'] = self.object.venue
+        return context
+
+    def get_success_url(self):
+        return reverse('core:agent-venue-detail', kwargs={'venue_id': self.object.venue_id})
+
+
 
 
 class VenueListView(ListView):
