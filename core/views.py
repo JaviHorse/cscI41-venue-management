@@ -140,7 +140,7 @@ class AgentVenueAmenityUpdateView(AgentRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse('core:agent-venue-detail', kwargs={'venue_id': self.object.venue_id})
 
-class AgentAmenityDeleteView(AgentRequiredMixin, DeleteView):
+class AgentVenueAmenityDeleteView(AgentRequiredMixin, DeleteView):
     """
     /agent/venue-amenities/<venue_amenity_id>/delete/
     """
