@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
-from django.views.generic import DetailView, ListView, CreateView, UpdateView
+from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse
 
 
@@ -140,7 +140,19 @@ class AgentVenueAmenityUpdateView(AgentRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse('core:agent-venue-detail', kwargs={'venue_id': self.object.venue_id})
 
+class AgentAmenityDeleteView(AgentRequiredMixin, DeleteView):
+    """
+    /agent/venue-amenities/<venue_amenity_id>/delete/
+    """
+    template_name = 'agent-venue-amenity-confirm-delete.html' # TODO: make this template
+    context_object_name = 'venue_amenity'
+    pk_url_kwarg = 'venue_amenity_id'
 
+    def get_queryset(self):
+        return queries.agent_venue_amenities(self.request.user)
+
+    def get_success_url(self):
+        return reverse('core:agent-venue-detail', kwargs={'venue_id': self.object.venue_id})
 
 
 class VenueListView(ListView):
