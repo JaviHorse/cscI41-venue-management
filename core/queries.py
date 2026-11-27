@@ -94,7 +94,15 @@ def past_venue_reservations(venue, now=None):
         .order_by('-start_datetime') # sort by most recent first
     )
 
-
+def agent_venue_amenities(user, today=None):
+    """
+    VenueAmenity records of the agent's managed venues.
+    """
+    return (
+        VenueAmenity.objects
+        .filter(venue__in=agent_venues(user, today).values('pk'))
+        .select_related('venue', 'amenity')
+    )
 # ---------- Venue list page: /venues/ ----------
 
 def search_venues(building=None, venue_type=None, min_capacity=None,
