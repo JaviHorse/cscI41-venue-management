@@ -30,7 +30,7 @@ class AgentVenueListView(AgentRequiredMixin, ListView):
     /agent/venues/
     Here we display the venues that the agent is currently handling.
     """
-    template_name = 'agent-venue-list.html'
+    template_name = 'agent-venue-list.html' #TODO: make template
     context_object_name = 'venues'
 
     def get_queryset(self):
@@ -42,7 +42,7 @@ class AgentVenueDetailView(AgentRequiredMixin, DetailView):
     Detail page of a venue that an agent manages.
     Shows its reservations, renovation status, and amenities.
     """
-    template_name = 'agent-venue-detail.html'
+    template_name = 'agent-venue-detail.html' # TODO: make template
     context_object_name = 'venue'
     pk_url_kwarg = 'venue_id'
 
