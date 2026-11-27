@@ -2,9 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, CreateView, UpdateView
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 
 from . import queries
 from .forms import ReservationForm, VenueFilterForm, RenovationForm, VenueAmenityForm
@@ -121,7 +121,7 @@ class AgentVenueAmenityCreateView(AgentRequiredMixin, CreateView):
 
 class AgentVenueAmenityUpdateView(AgentRequiredMixin, UpdateView):
     """
-    /agent/venue-amenities/<venue_amenity_id>/<edit>/
+    /agent/venue-amenities/<venue_amenity_id>/edit/
     Edits an amenity on a venue the agent manages.
     """
     form_class = VenueAmenityForm
