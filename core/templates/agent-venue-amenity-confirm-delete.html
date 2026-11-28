@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}State Spaces | Delete Amenity{% endblock %}
+
+{% block content %}
+{% with venue=venue_amenity.venue %}
+<a class="back" href="{% url 'core:agent-venue-detail' venue.pk %}">← Back to {{ venue.venue_name }}</a>
+
+<div class="card form-card">
+    <h2>Delete Amenity?</h2>
+    <p>
+        This removes <strong>{{ venue_amenity.quantity }} {{ venue_amenity.amenity.amenity_name }}</strong>
+        ({{ venue_amenity.description }}) from <strong>{{ venue.venue_name }}</strong>. This cannot be undone.
+    </p>
+
+    {# The spec says a venue must have at least one amenity, so the last one cannot be deleted. #}
+    {% if venue.venue_amenities.count == 1 %}
+        <p class="alert alert-amber">This is the only amenity of {{ venue.venue_name }}. A venue must have at least one amenity, so add another one before deleting this.</p>
+        <div class="form-actions">
+            <a class="btn btn-primary" href="{% url 'core:agent-venue-amenity-create' venue.pk %}">Add an Amenity</a>
+            <a class="btn btn-light" href="{% url 'core:agent-venue-detail' venue.pk %}">Cancel</a>
+        </div>
+    {% else %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Delete Amenity</button>
+                <a class="btn btn-light" href="{% url 'core:agent-venue-detail' venue.pk %}">Cancel</a>
+            </div>
+        </form>
+    {% endif %}
+</div>
+{% endwith %}
+{% endblock %}

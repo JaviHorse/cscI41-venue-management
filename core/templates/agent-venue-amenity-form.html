@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{# Used by both AgentVenueAmenityCreateView (add) and AgentVenueAmenityUpdateView (edit). #}
+{# When editing, the view also sends "venue_amenity", so we can tell the two apart. #}
+
+{% block title %}State Spaces | {% if venue_amenity %}Edit{% else %}Add{% endif %} Amenity{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'core:agent-venue-detail' venue.pk %}">← Back to {{ venue.venue_name }}</a>
+
+<div class="card form-card">
+    <h2>{% if venue_amenity %}Edit Amenity{% else %}Add an Amenity{% endif %}</h2>
+    <p class="muted">{{ venue.venue_name }} · {{ venue.building.building_name }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if venue_amenity %}Save Changes{% else %}Add Amenity{% endif %}</button>
+            <a class="btn btn-light" href="{% url 'core:agent-venue-detail' venue.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

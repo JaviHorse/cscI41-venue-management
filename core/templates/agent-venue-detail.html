@@ -27,17 +27,41 @@
         </ul>
 
         <div class="detail-section">
-            <h3>Amenities</h3>
-            <ul class="amenities">
-                {% for amenity in amenities %}
-                    <li>
-                        <span class="chip">{{ amenity.amenity.amenity_name }} × {{ amenity.quantity }}</span>
-                        <span class="muted small">{{ amenity.description }} · installed {{ amenity.installation_date|date:"M j, Y" }}</span>
-                    </li>
-                {% empty %}
-                    <li class="muted">No amenities recorded.</li>
-                {% endfor %}
-            </ul>
+            <div class="section-head">
+                <h3>Amenities</h3>
+                <a class="btn btn-light btn-small" href="{% url 'core:agent-venue-amenity-create' venue.pk %}">+ Add Amenity</a>
+            </div>
+            {% if amenities %}
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Installed</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for amenity in amenities %}
+                                <tr>
+                                    <td>{{ amenity.amenity.amenity_name }}</td>
+                                    <td>{{ amenity.description }}</td>
+                                    <td>{{ amenity.quantity }}</td>
+                                    <td>{{ amenity.installation_date|date:"M j, Y" }}</td>
+                                    <td class="row-actions">
+                                        <a href="{% url 'core:agent-venue-amenity-update' amenity.pk %}">Edit</a>
+                                        <a class="danger-link" href="{% url 'core:agent-venue-amenity-delete' amenity.pk %}">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="muted">No amenities recorded.</p>
+            {% endif %}
         </div>
     </section>
 
@@ -59,6 +83,29 @@
                 <dd>{% if next %}{{ next.start_datetime|date:"D, M j, Y · g:i A" }}{% else %}None scheduled{% endif %}</dd>
             {% endwith %}
         </dl>
+
+        {# Renovation controls. Both buttons post to this same page; the "action" value tells the view which one was pressed. #}
+        <div class="renovation-box">
+            <h3>Renovation</h3>
+            {{ renovation_form.non_field_errors }}
+            {% if renovation and renovation.date_completed %}
+                {# Already marked complete: its last day is still ahead or today, so there is nothing to press. #}
+                <p class="muted small">This renovation ends on {{ renovation.date_completed|date:"M j, Y" }}. The venue opens for bookings again the day after.</p>
+            {% else %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if renovation %}
+                        <p class="muted small">Finishing the renovation sets today as its last day. The venue can be booked again from tomorrow.</p>
+                        <button type="submit" name="action" value="complete_renovation" class="btn btn-primary btn-block">Mark Renovation Complete</button>
+                    {% else %}
+                        <p class="muted small">Starting a renovation from today blocks new bookings until you mark it complete.</p>
+                        {{ renovation_form.as_p }}
+                        <button type="submit" name="action" value="start_renovation" class="btn btn-light btn-block">Mark as Under Renovation</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+
         <a class="link-muted" href="{% url 'core:venue-detail' venue.pk %}">See the public venue page</a>
         <div class="detail-section">
             {% include "booking-calendar.html" %}
