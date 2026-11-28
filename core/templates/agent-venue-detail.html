@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}State Spaces | {{ venue.venue_name }}{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'core:agent-venue-list' %}">← Back to My Venues</a>
+
+<div class="layout layout-detail">
+    <section class="card">
+        {% with 'img/venues/'|add:venue.pk|add:'.jpg' as photo %}
+            <img class="venue-photo" src="{% static photo %}" alt="{{ venue.venue_name }}">
+        {% endwith %}
+        <div class="card-top">
+            <span class="chip">{{ venue.venue_type }}</span>
+            {% if renovation %}
+                <span class="badge badge-amber">Under Renovation</span>
+            {% else %}
+                <span class="badge badge-green">Open for Booking</span>
+            {% endif %}
+        </div>
+        <h2>{{ venue.venue_name }}</h2>
+        <p class="muted">Floor {{ venue.floor }}, {{ venue.building.building_name }}, {{ venue.building.street }}, {{ venue.building.district }}, {{ venue.building.city }}</p>
+        <ul class="facts">
+            <li><strong>{{ venue.capacity }}</strong> people</li>
+            <li><strong>{{ venue.floor_area_sqm }}</strong> sqm</li>
+        </ul>
+
+        <div class="detail-section">
+            <h3>Amenities</h3>
+            <ul class="amenities">
+                {% for amenity in amenities %}
+                    <li>
+                        <span class="chip">{{ amenity.amenity.amenity_name }} × {{ amenity.quantity }}</span>
+                        <span class="muted small">{{ amenity.description }} · installed {{ amenity.installation_date|date:"M j, Y" }}</span>
+                    </li>
+                {% empty %}
+                    <li class="muted">No amenities recorded.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <aside class="card">
+        <h2>Venue Status</h2>
+        {% if renovation %}
+            <p class="alert alert-amber">
+                Under renovation since {{ renovation.date_started|date:"M j, Y" }}{% if renovation.date_completed %}, until {{ renovation.date_completed|date:"M j, Y" }}{% else %}, with no end date yet{% endif %}.
+                {% if renovation.remarks %}{{ renovation.remarks }}{% endif %}
+            </p>
+        {% endif %}
+        <dl class="status-list">
+            <dt>Upcoming reservations</dt>
+            <dd>{{ upcoming_reservations|length }}</dd>
+            <dt>Past reservations</dt>
+            <dd>{{ past_reservations|length }}</dd>
+            <dt>Next booking</dt>
+            {% with upcoming_reservations|first as next %}
+                <dd>{% if next %}{{ next.start_datetime|date:"D, M j, Y · g:i A" }}{% else %}None scheduled{% endif %}</dd>
+            {% endwith %}
+        </dl>
+        <a class="link-muted" href="{% url 'core:venue-detail' venue.pk %}">See the public venue page</a>
+        <div class="detail-section">
+            {% include "booking-calendar.html" %}
+        </div>
+    </aside>
+</div>
+
+<section class="card table-card">
+    <div class="section-head">
+        <h2>Upcoming Reservations</h2>
+        <span class="count">{{ upcoming_reservations|length }}</span>
+    </div>
+    {% include "agent-reservation-table.html" with reservations=upcoming_reservations empty_text="No upcoming reservations." %}
+</section>
+
+<section class="card table-card">
+    <div class="section-head">
+        <h2>Past Reservations</h2>
+        <span class="count">{{ past_reservations|length }}</span>
+    </div>
+    {% include "agent-reservation-table.html" with reservations=past_reservations empty_text="No past reservations yet." %}
+</section>
+{% endblock %}

@@ -23,7 +23,9 @@
             <h3>Customer</h3>
             <dl>
                 <dt>Name</dt>
-                <dd>{{ reservation.customer }}</dd>
+                <dd>{{ reservation.customer.last_name }}, {{ reservation.customer.first_name }}{% if reservation.customer.middle_initial %} {{ reservation.customer.middle_initial }}.{% endif %}</dd>
+                <dt>Birth Date</dt>
+                <dd>{{ reservation.customer.birth_date|date:"F j, Y" }}</dd>
                 <dt>Location</dt>
                 <dd>{{ reservation.customer.customer_location }}</dd>
             </dl>
@@ -37,19 +39,21 @@
                 <dt>Type</dt>
                 <dd>{{ reservation.venue.venue_type }}</dd>
                 <dt>Location</dt>
-                <dd>Floor {{ reservation.venue.floor }}, {{ reservation.venue.building.building_name }},
-                    {{ reservation.venue.building.street }}, {{ reservation.venue.building.district }}, {{ reservation.venue.building.city }}</dd>
+                <dd>{{ reservation.venue.floor }}F {{ reservation.venue.building.building_name }}, {{ reservation.venue.building.street }}, {{ reservation.venue.building.district }}, {{ reservation.venue.building.city }}</dd>
+                <dt>Agent</dt>
+                {# The agent assigned to this venue on the reservation date (VENUE_ASSIGNMENT); an assignment with no end date is still running. #}
+                <dd>{% with day=reservation.start_datetime.date %}{% for assignment in reservation.venue.assignments.all %}{% if assignment.start_date <= day %}{% if not assignment.end_date or assignment.end_date >= day %}{{ assignment.agent }}{% endif %}{% endif %}{% endfor %}{% endwith %}</dd>
             </dl>
         </section>
 
         <section>
             <h3>Booking</h3>
             <dl>
-                <dt>Start</dt>
-                <dd>{{ reservation.start_datetime|date:"D, M j, Y · g:i A" }}</dd>
-                <dt>End</dt>
-                <dd>{{ reservation.end_datetime|date:"D, M j, Y · g:i A" }}</dd>
-                <dt>Expected Participants</dt>
+                <dt>From</dt>
+                <dd>{{ reservation.start_datetime|date:"M j, Y, g:i A" }}</dd>
+                <dt>To</dt>
+                <dd>{{ reservation.end_datetime|date:"M j, Y, g:i A" }}</dd>
+                <dt>Number of Participants</dt>
                 <dd>{{ reservation.expected_participants }}</dd>
             </dl>
         </section>

@@ -6,7 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{%block title%}State Spaces{%endblock%}</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;600;700;800&display=swap">
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        {# "?v=2" makes browsers download styles.css again instead of using an old saved copy. Raise the number whenever styles.css changes. #}
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=4">
         {%block styles%}{%endblock%}
     </head>
     <body>
@@ -14,8 +15,11 @@
             <a class="brand" href="{% url 'core:venue-list' %}">State Spaces</a>
             <nav class="site-nav">
                 <a href="{% url 'core:venue-list' %}">Venues</a>
-                {% if request.user.is_authenticated %}
+                {% if not request.user.is_authenticated or request.user.profile.customer %}
                     <a href="{% url 'core:reservation-list' %}">My Reservations</a>
+                {% endif %}
+                {% if request.user.profile.agent %}
+                    <a href="{% url 'core:agent-venue-list' %}">My Venues</a>
                 {% endif %}
             </nav>
             {% if request.user.is_authenticated %}

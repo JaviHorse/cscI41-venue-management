@@ -20,15 +20,19 @@
             {% endif %}
         </div>
         <h2>{{ venue.venue_name }}</h2>
-        <p class="muted">{{ venue.building.building_name }} · Floor {{ venue.floor }}</p>
-        <ul class="facts">
-            <li><strong>{{ venue.capacity }}</strong> people</li>
-            <li><strong>{{ venue.floor_area_sqm }}</strong> sqm</li>
-        </ul>
 
         <div class="detail-section">
-            <h3>Location</h3>
-            <p>{{ venue.building.street }}, {{ venue.building.district }}, {{ venue.building.city }}</p>
+            <h3>Venue Information</h3>
+            <dl class="info-grid">
+                <div><dt>Venue ID</dt><dd>{{ venue.venue_id }}</dd></div>
+                <div><dt>Type</dt><dd>{{ venue.venue_type }}</dd></div>
+                <div><dt>Capacity</dt><dd>{{ venue.capacity }}</dd></div>
+                <div><dt>Building</dt><dd>{{ venue.building.building_name }}</dd></div>
+                <div><dt>Floor</dt><dd>{{ venue.floor }}F</dd></div>
+                <div><dt>Floor Area</dt><dd>{{ venue.floor_area_sqm }} sqm</dd></div>
+                <div><dt>Address</dt><dd>{{ venue.building.street }}, {{ venue.building.district }}</dd></div>
+                <div><dt>City</dt><dd>{{ venue.building.city }}</dd></div>
+            </dl>
         </div>
 
         <div class="detail-section">
@@ -42,20 +46,34 @@
 
         <div class="detail-section">
             <h3>Amenities</h3>
-            <ul class="amenities">
-                {% for amenity in amenities %}
-                    <li>
-                        <span class="chip">{{ amenity.amenity.amenity_name }} × {{ amenity.quantity }}</span>
-                        <span class="muted small">{{ amenity.description }}</span>
-                    </li>
-                {% empty %}
-                    <li class="muted">No amenities recorded.</li>
-                {% endfor %}
-            </ul>
+            {% if amenities %}
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for amenity in amenities %}
+                                <tr>
+                                    <td>{{ amenity.amenity.amenity_name }}</td>
+                                    <td>{{ amenity.description }}</td>
+                                    <td>{{ amenity.quantity }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="muted">No amenities recorded.</p>
+            {% endif %}
         </div>
     </section>
 
-    <aside class="card sticky">
+    <aside class="card">
         <h2>Make a Reservation</h2>
         {% if renovations %}
             <p class="alert alert-amber">This venue is under renovation right now. Bookings that overlap the renovation will not go through.</p>
@@ -75,6 +93,9 @@
         {% else %}
             <p class="alert alert-amber">Only customer accounts can make reservations. Your account, {{ request.user }}, is not linked to a customer.</p>
         {% endif %}
+        <div class="detail-section">
+            {% include "booking-calendar.html" %}
+        </div>
     </aside>
 </div>
 {% endblock %}

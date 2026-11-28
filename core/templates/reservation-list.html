@@ -4,6 +4,26 @@
 {% block title %}State Spaces | My Reservations{% endblock %}
 
 {% block content %}
+{% with customer=request.user.profile.customer %}
+<section class="card summary-card">
+    <h2>Venue Reservation Summary</h2>
+    <dl class="info-grid">
+        <div>
+            <dt>Customer</dt>
+            <dd>{{ customer.last_name }}, {{ customer.first_name }}{% if customer.middle_initial %} {{ customer.middle_initial }}.{% endif %}</dd>
+        </div>
+        <div>
+            <dt>Birth Date</dt>
+            <dd>{{ customer.birth_date|date:"F j, Y" }}</dd>
+        </div>
+        <div>
+            <dt>Location</dt>
+            <dd>{{ customer.customer_location }}</dd>
+        </div>
+    </dl>
+</section>
+{% endwith %}
+
 <div class="section-head">
     <h2>My Reservations</h2>
     <span class="count">{{ reservations|length }}</span>
@@ -11,21 +31,29 @@
 
 <div class="stack">
     {% for reservation in reservations %}
-        <a class="card row-card" href="{% url 'core:reservation-detail' reservation.pk %}">
+        <article class="card report-card">
             {% with 'img/venues/'|add:reservation.venue.pk|add:'.jpg' as photo %}
-                <img class="thumb" src="{% static photo %}" alt="{{ reservation.venue.venue_name }}">
+                <img class="report-photo" src="{% static photo %}" alt="{{ reservation.venue.venue_name }}">
             {% endwith %}
-            <div class="main">
-                <p class="muted small">{{ reservation.reservation_id }}</p>
+
+            <div class="report-main">
+                <div class="card-top">
+                    <span class="chip">{{ reservation.venue.venue_type }}</span>
+                    <span class="badge badge-primary">Reservation {{ reservation.reservation_id }}</span>
+                </div>
                 <h3>{{ reservation.venue.venue_name }}</h3>
-                <p class="muted">{{ reservation.venue.building.building_name }} · Floor {{ reservation.venue.floor }}</p>
+                <p class="muted">{{ reservation.venue.floor }}F {{ reservation.venue.building.building_name }}, {{ reservation.venue.building.street }}, {{ reservation.venue.building.district }}, {{ reservation.venue.building.city }}</p>
+                <ul class="facts">
+                    <li><strong>{{ reservation.expected_participants }}</strong> participants</li>
+                    <li>From <strong>{{ reservation.start_datetime|date:"M j, Y, g:i A" }}</strong></li>
+                    <li>To <strong>{{ reservation.end_datetime|date:"M j, Y, g:i A" }}</strong></li>
+                </ul>
+                {# The agent assigned to this venue on the reservation date (VENUE_ASSIGNMENT); an assignment with no end date is still running. #}
+                <p class="muted">Agent: <strong class="agent-name">{% with day=reservation.start_datetime.date %}{% for assignment in reservation.venue.assignments.all %}{% if assignment.start_date <= day %}{% if not assignment.end_date or assignment.end_date >= day %}{{ assignment.agent }}{% endif %}{% endif %}{% endfor %}{% endwith %}</strong></p>
             </div>
-            <div class="when">
-                <strong>{{ reservation.start_datetime|date:"D, M j, Y" }}</strong>
-                <span class="muted">{{ reservation.start_datetime|date:"g:i A" }} to {{ reservation.end_datetime|date:"M j, g:i A" }}</span>
-            </div>
-            <span class="chip">{{ reservation.expected_participants }} people</span>
-        </a>
+
+            <a class="btn btn-primary" href="{% url 'core:reservation-detail' reservation.pk %}">View Reservation</a>
+        </article>
     {% empty %}
         <div class="card empty">
             <p>You have not made any reservations yet.</p>
