@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from core.models import (
     Venue,
+    VenueAmenity,
     Reservation,
     Renovation,
 )
@@ -164,6 +165,53 @@ def create_renovation(
 
     return candidate
 
+@transaction.atomic
+def complete_renovation(renovation_id, date_completed=None):
+    """
+    Marks an ongoing renovation as done. date_completed is default today.
+    date_completed is the renovation's last day. The venue will reopen after it.
+    """
+    renovation = Renovation.objects.get(pk=renovation_id)
+    date_completed = date_completed or timezone.localdate()
+
+    if renovation.date_completed is not None:
+        raise ValidationError("This renovation is already completed.")
+
+    if date_completed < renovation.date_started:
+        raise ValidationError("Renovation completion cannot precede start date.")
+
+    renovation.date_completed = date_completed
+    renovation.full_clean()
+    renovation.save()
+
+    return renovation
+
+@transaction.atomic
+def create_venue_amenity(
+        venue_id,
+        amenity,
+        description,
+        quantity,
+        installation_date,
+        venue_amenity_id=None,
+    ):
+    if venue_amenity_id is None:
+        venue_amenity_id = next_id(VenueAmenity)
+
+    candidate = VenueAmenity(
+        venue_amenity_id=venue_amenity_id,
+        venue_id=venue_id,
+        amenity=amenity,
+        description=description,
+        quantity=quantity,
+        installation_date=installation_date
+    )
+
+    candidate.full_clean()
+    candidate.save()
+
+    return candidate
+
 def next_id(model):
     """
     Return the next 7-digit ID for the table, ex. 1000005 -> 1000006.
@@ -178,6 +226,5 @@ def next_id(model):
             f"No 7-digit IDs left for {model._meta.db_table}."
         )
     return f"{number:07d}"
-    
     
 

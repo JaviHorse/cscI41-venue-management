@@ -1,5 +1,5 @@
 from django import forms
-from .models import Reservation
+from .models import Reservation, Renovation, VenueAmenity
 from . import queries
 
 
@@ -50,3 +50,19 @@ class VenueFilterForm(forms.Form):
         if start and end and start >= end:
             raise forms.ValidationError('End date/time must be later than start date/time.')
         return cleaned
+
+
+class RenovationForm(forms.ModelForm):
+    class Meta:
+        model = Renovation
+        fields = ['remarks']
+
+class VenueAmenityForm(forms.ModelForm):
+    quantity = forms.IntegerField(min_value=1, initial=1)
+
+    class Meta:
+        model = VenueAmenity
+        fields = ['amenity', 'description', 'quantity', 'installation_date']
+        widgets = {
+            'installation_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        }
