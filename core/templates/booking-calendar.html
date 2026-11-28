@@ -1,0 +1,109 @@
+{# Small month calendar of when this venue is booked or under renovation. #}
+{# Used by venue-detail.html and agent-venue-detail.html with {% include "booking-calendar.html" %}; both pages already have "venue". #}
+<div class="booking-calendar" data-today="{% now 'Y-m-d' %}">
+    <h3>Booked Dates</h3>
+
+    {# The dates the calendar marks. The script below reads these items; they are hidden from view. #}
+    <ul class="calendar-data" hidden>
+        {% for reservation in venue.reservations.all %}
+            <li data-kind="booked"
+                data-start="{{ reservation.start_datetime|date:'Y-m-d' }}"
+                data-end="{{ reservation.end_datetime|date:'Y-m-d' }}"
+                data-label="{{ reservation.start_datetime|date:'g:i A' }} to {{ reservation.end_datetime|date:'M j, g:i A' }}"></li>
+        {% endfor %}
+        {% for renovation in venue.renovations.all %}
+            <li data-kind="renovation"
+                data-start="{{ renovation.date_started|date:'Y-m-d' }}"
+                data-end="{{ renovation.date_completed|date:'Y-m-d' }}"
+                data-label="Under renovation"></li>
+        {% endfor %}
+    </ul>
+
+    <div class="calendar-head">
+        <button type="button" class="calendar-nav" data-step="-1" aria-label="Previous month">‹</button>
+        <strong class="calendar-title"></strong>
+        <button type="button" class="calendar-nav" data-step="1" aria-label="Next month">›</button>
+    </div>
+    <div class="calendar-grid"></div>
+    <ul class="calendar-legend">
+        <li><span class="dot dot-booked"></span>Booked</li>
+        <li><span class="dot dot-renovation"></span>Renovation</li>
+        <li><span class="dot dot-today"></span>Today</li>
+    </ul>
+    <p class="calendar-note muted small">Click a highlighted day to see the times.</p>
+</div>
+
+<script>
+// Draws the month calendar above from the hidden list of dates.
+(function () {
+    const box = document.currentScript.previousElementSibling;
+    const titleEl = box.querySelector('.calendar-title');
+    const gridEl = box.querySelector('.calendar-grid');
+    const noteEl = box.querySelector('.calendar-note');
+    const today = box.dataset.today;
+    const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'];
+
+    // "2027-01-20" -> a plain day number we can count with (no time zones involved).
+    const toDay = (text) => {
+        const [y, m, d] = text.split('-').map(Number);
+        return Date.UTC(y, m - 1, d) / 86400000;
+    };
+    const items = [...box.querySelectorAll('.calendar-data li')].map((li) => ({
+        kind: li.dataset.kind,
+        start: toDay(li.dataset.start),
+        end: li.dataset.end ? toDay(li.dataset.end) : Infinity,   // a renovation with no end date is still going
+        label: li.dataset.label,
+    }));
+
+    let [year, month] = today.split('-').map(Number);
+    month -= 1;
+
+    function draw() {
+        titleEl.textContent = MONTHS[month] + ' ' + year;
+        gridEl.innerHTML = '';
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach((name) => {
+            const cell = document.createElement('span');
+            cell.className = 'calendar-weekday';
+            cell.textContent = name.slice(0, 2);
+            gridEl.appendChild(cell);
+        });
+        const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+        const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+        for (let i = 0; i < firstWeekday; i++) {
+            gridEl.appendChild(document.createElement('span'));
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dayNumber = Date.UTC(year, month, d) / 86400000;
+            const hits = items.filter((item) => item.start <= dayNumber && dayNumber <= item.end);
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'calendar-day';
+            cell.textContent = d;
+            // A booking wins over a renovation so the agent can spot clashes.
+            if (hits.some((item) => item.kind === 'booked')) cell.classList.add('is-booked');
+            else if (hits.length) cell.classList.add('is-renovation');
+            if (dayNumber === toDay(today)) cell.classList.add('is-today');
+            if (hits.length) {
+                cell.addEventListener('click', () => {
+                    noteEl.textContent = MONTHS[month].slice(0, 3) + ' ' + d + ': ' + hits.map((item) => item.label).join('; ');
+                });
+            } else {
+                cell.disabled = true;
+            }
+            gridEl.appendChild(cell);
+        }
+    }
+
+    box.querySelectorAll('.calendar-nav').forEach((button) => {
+        button.addEventListener('click', () => {
+            month += Number(button.dataset.step);
+            if (month < 0) { month = 11; year -= 1; }
+            if (month > 11) { month = 0; year += 1; }
+            noteEl.textContent = 'Click a highlighted day to see the times.';
+            draw();
+        });
+    });
+    draw();
+})();
+</script>

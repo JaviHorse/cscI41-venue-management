@@ -41,7 +41,7 @@
         </div>
     </section>
 
-    <aside class="card sticky">
+    <aside class="card">
         <h2>Venue Status</h2>
         {% if renovation %}
             <p class="alert alert-amber">
@@ -60,6 +60,9 @@
             {% endwith %}
         </dl>
         <a class="link-muted" href="{% url 'core:venue-detail' venue.pk %}">See the public venue page</a>
+        <div class="detail-section">
+            {% include "booking-calendar.html" %}
+        </div>
     </aside>
 </div>
 
